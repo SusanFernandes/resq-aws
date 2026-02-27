@@ -29,13 +29,82 @@ interface ComplexityData {
   reasoning: string[]
 }
 
-export function ComplexityPredictionCard() {
+interface ComplexityPredictionCardProps {
+  transcript?: string
+  callId?: string
+  demographics?: any
+}
+
+export function ComplexityPredictionCard({ transcript = '', callId, demographics }: ComplexityPredictionCardProps) {
   const [complexityData, setComplexityData] = useState<ComplexityData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    initializeComplexity()
-  }, [])
+    if (transcript) {
+      predictComplexity(transcript)
+    } else {
+      initializeComplexity()
+    }
+  }, [transcript])
+
+  const predictComplexity = async (text: string) => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const response = await fetch('/api/predict-complexity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          callId: callId || `call-${Date.now()}`,
+          transcript: text,
+          demographics: demographics || { age: 45 }
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const result = await response.json()
+
+      // Map API response to component format
+      const complexityMap = { SIMPLE: 25, MODERATE: 50, COMPLEX: 75, CRITICAL: 100 }
+      const timeMap = { SIMPLE: 180, MODERATE: 420, COMPLEX: 900, CRITICAL: 1800 }
+      const operatorMap = { SIMPLE: 'JUNIOR', MODERATE: 'SENIOR', COMPLEX: 'EXPERT', CRITICAL: 'SUPERVISOR' }
+
+      setComplexityData({
+        level: result.level || 'MODERATE',
+        score: result.score || 50,
+        factors: result.factors || {
+          medicalComplexity: 50,
+          logisticalComplexity: 50,
+          psychologicalComplexity: 50,
+          environmentalComplexity: 50,
+          timelineComplexity: 50
+        },
+        estimatedHandleTime: timeMap[result.level] || 420,
+        recommendedOperatorLevel: (operatorMap[result.level] || 'SENIOR') as any,
+        predictedResourceNeed: {
+          ambulances: result.level === 'CRITICAL' ? 2 : 1,
+          fireTrucks: result.level === 'CRITICAL' ? 1 : 0,
+          policeUnits: result.level === 'COMPLEX' || result.level === 'CRITICAL' ? 1 : 0,
+          hazmatTeam: result.requiredResources?.includes('Hazmat') || false,
+          searchRescue: false,
+          mentalHealthSpecialist: result.level === 'COMPLEX' || result.level === 'CRITICAL'
+        },
+        confidence: result.confidence || 0.85,
+        reasoning: result.requiredResources || []
+      })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Complexity prediction failed')
+      console.error('Complexity prediction error:', err)
+      initializeComplexity() // Fallback
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const initializeComplexity = () => {
     const mockData: ComplexityData = {

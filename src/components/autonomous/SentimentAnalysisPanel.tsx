@@ -25,15 +25,99 @@ interface SentimentData {
   secondaryEmotion: string
 }
 
-export function SentimentAnalysisPanel() {
+interface SentimentAnalysisPanelProps {
+  transcript?: string
+  callId?: string
+  autoRefresh?: boolean
+}
+
+export function SentimentAnalysisPanel({ transcript = '', callId, autoRefresh = true }: SentimentAnalysisPanelProps) {
   const [sentimentData, setSentimentData] = useState<SentimentData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [trendHistory, setTrendHistory] = useState<Array<{ time: string; stress: number; panic: number }>>([])
 
   useEffect(() => {
-    initializeSentiment()
-    const interval = setInterval(updateSentiment, 10000) // Update every 10 seconds
+    if (transcript) {
+      analyzeSentiment(transcript)
+    } else {
+      initializeSentiment()
+    }
+  }, [transcript])
+
+  useEffect(() => {
+    if (!autoRefresh || !transcript) return
+    
+    const interval = setInterval(() => {
+      analyzeSentiment(transcript)
+    }, 15000) // Update every 15 seconds
     return () => clearInterval(interval)
-  }, [])
+  }, [transcript, autoRefresh])
+
+  const analyzeSentiment = async (text: string) => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      const response = await fetch('/api/analyze-sentiment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      })
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+
+      const result = await response.json()
+
+      // Map API response to our component format
+      const newTrend = {
+        time: new Date().toLocaleTimeString(),
+        stress: result.stress_level === 'critical' ? 90 : result.stress_level === 'high' ? 70 : result.stress_level === 'moderate' ? 50 : 30,
+        panic: result.emotions?.panic || 0
+      }
+
+      setTrendHistory(prev => [...prev.slice(-9), newTrend]) // Keep last 10 points
+
+      const emotions = result.emotions || {
+        panic: 0,
+        worry: 0,
+        calmness: 100,
+        anger: 0,
+        confusion: 0
+      }
+
+      const sorted = Object.entries(emotions).sort(([, a], [, b]) => b - a)
+      const dominant = sorted[0]?.[0] || 'calmness'
+      const secondary = sorted[1]?.[0] || 'calmness'
+
+      setSentimentData({
+        currentSentiment: result.sentiment || 'neutral',
+        emotionScores: emotions,
+        stressLevel: result.stress_level || 'moderate',
+        riskScore: result.risk_score || 50,
+        confidence: result.confidence || 0.85,
+        recommendation: result.recommendation || 'Processing...',
+        trendData: trendHistory.length > 0 ? trendHistory : generateMockTrend(),
+        dominantEmotion: dominant.charAt(0).toUpperCase() + dominant.slice(1),
+        secondaryEmotion: secondary.charAt(0).toUpperCase() + secondary.slice(1)
+      })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Analysis failed')
+      console.error('Sentiment analysis error:', err)
+      initializeSentiment() // Fallback to mock
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const generateMockTrend = () => [
+    { time: '0s', stress: 45, panic: 20 },
+    { time: '30s', stress: 58, panic: 35 },
+    { time: '60s', stress: 70, panic: 55 },
+    { time: '90s', stress: 78, panic: 75 },
+  ]
 
   const initializeSentiment = () => {
     const mockData: SentimentData = {
@@ -47,36 +131,15 @@ export function SentimentAnalysisPanel() {
       },
       stressLevel: 'high',
       riskScore: 78,
-      confidence: 92,
+      confidence: 0.92,
       recommendation:
         '😨 HIGH STRESS DETECTED: Caller experiencing significant panic. Recommend calming techniques and reassurance.',
-      trendData: [
-        { time: '0s', stress: 45, panic: 20 },
-        { time: '30s', stress: 58, panic: 35 },
-        { time: '60s', stress: 70, panic: 55 },
-        { time: '90s', stress: 78, panic: 75 },
-      ],
+      trendData: generateMockTrend(),
       dominantEmotion: 'Panic',
       secondaryEmotion: 'Worry',
     }
     setSentimentData(mockData)
     setLoading(false)
-  }
-
-  const updateSentiment = () => {
-    setSentimentData((prev) => {
-      if (!prev) return null
-      // Simulate slight changes in sentiment over time
-      const variation = (Math.random() - 0.5) * 10
-      return {
-        ...prev,
-        emotionScores: {
-          ...prev.emotionScores,
-          panic: Math.max(0, Math.min(100, prev.emotionScores.panic + variation)),
-        },
-        riskScore: Math.max(0, Math.min(100, prev.riskScore + variation)),
-      }
-    })
   }
 
   const getEmotionColor = (emotion: string, score: number): string => {
