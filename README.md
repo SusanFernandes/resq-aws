@@ -156,18 +156,31 @@ python twilio_setup.py
 
 ### 6. Start Services
 
-```bash
-# Terminal 1: Start RAG app (handles voice calls)
-cd rag-app
-python app.py
+**Important: Start in this specific order:**
 
-# Terminal 2: Start backend API/WebSocket server
+```bash
+# Terminal 1: Start backend API/WebSocket server (Port 8080)
 cd backend
 npm start
 
-# Terminal 3: Start frontend dashboard
+# Terminal 2: Configure Twilio webhook
+cd rag-app
+python twilio_setup.py
+# Note: Use the ngrok HTTPS URL provided to configure your Twilio phone number
+
+# Terminal 3: Start RAG app (handles voice calls on Port 5000)
+cd rag-app
+python app.py
+
+# Terminal 4: Start frontend dashboard (Port 3000)
 npm run dev
 ```
+
+**Why this order matters:**
+1. Backend must be running first to receive webhook data (port 8080)
+2. Twilio setup needs the backend ready and will provide ngrok URL
+3. RAG app connects to backend webhook and sends data there (NOT app2.py)
+4. Frontend connects via WebSocket to backend for real-time updates
 
 ## 📞 Voice Call Flow
 

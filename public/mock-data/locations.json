@@ -1,0 +1,169 @@
+{
+  "locations": [
+    {
+      "id": "loc_001",
+      "name": "Marine Drive",
+      "latitude": 19.076,
+      "longitude": 72.8777,
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "address": "Marine Drive, Worli, Mumbai",
+      "pincode": "400018",
+      "type": "street"
+    },
+    {
+      "id": "loc_002",
+      "name": "Dadar Railway Station",
+      "latitude": 19.0176,
+      "longitude": 72.8327,
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "address": "Dadar East, Mumbai",
+      "pincode": "400014",
+      "type": "railway_station"
+    },
+    {
+      "id": "loc_003",
+      "name": "Bandra Kurla Complex",
+      "latitude": 19.0543,
+      "longitude": 72.8298,
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "address": "Bandra East, Mumbai",
+      "pincode": "400051",
+      "type": "commercial_area"
+    },
+    {
+      "id": "loc_004",
+      "name": "Gateway of India",
+      "latitude": 18.9566,
+      "longitude": 72.8346,
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "address": "Apollo Bunder, Colaba, Mumbai",
+      "pincode": "400039",
+      "type": "landmark"
+    },
+    {
+      "id": "loc_005",
+      "name": "CST Railway Station",
+      "latitude": 18.9676,
+      "longitude": 72.8326,
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "address": "Fort, Mumbai",
+      "pincode": "400001",
+      "type": "railway_station"
+    },
+    {
+      "id": "loc_006",
+      "name": "Powai Lake",
+      "latitude": 19.1136,
+      "longitude": 72.9076,
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "address": "Powai, Mumbai",
+      "pincode": "400076",
+      "type": "landmark"
+    },
+    {
+      "id": "loc_007",
+      "name": "Phoenix Market City",
+      "latitude": 19.1026,
+      "longitude": 72.8877,
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "address": "LBS Marg, Kurla, Mumbai",
+      "pincode": "400070",
+      "type": "shopping_center"
+    },
+    {
+      "id": "loc_008",
+      "name": "Rajiv Chowk",
+      "latitude": 28.6328,
+      "longitude": 77.2197,
+      "city": "Delhi",
+      "state": "Delhi",
+      "address": "Rajiv Chowk, New Delhi",
+      "pincode": "110001",
+      "type": "market"
+    },
+    {
+      "id": "loc_009",
+      "name": "India Gate",
+      "latitude": 28.6129,
+      "longitude": 77.2295,
+      "city": "Delhi",
+      "state": "Delhi",
+      "address": "New Delhi",
+      "pincode": "110011",
+      "type": "landmark"
+    },
+    {
+      "id": "loc_010",
+      "name": "Connaught Place",
+      "latitude": 28.6328,
+      "longitude": 77.2197,
+      "city": "Delhi",
+      "state": "Delhi",
+      "address": "New Delhi",
+      "pincode": "110001",
+      "type": "commercial_area"
+    },
+    {
+      "id": "loc_011",
+      "name": "Vidhana Soudha",
+      "latitude": 12.9789,
+      "longitude": 77.5915,
+      "city": "Bangalore",
+      "state": "Karnataka",
+      "address": "Vidhana Soudha Rd, Bangalore",
+      "pincode": "560001",
+      "type": "landmark"
+    },
+    {
+      "id": "loc_012",
+      "name": "Tech Park",
+      "latitude": 12.9352,
+      "longitude": 77.6245,
+      "city": "Bangalore",
+      "state": "Karnataka",
+      "address": "Whitefield, Bangalore",
+      "pincode": "560066",
+      "type": "commercial_area"
+    },
+    {
+      "id": "loc_013",
+      "name": "Charminar",
+      "latitude": 17.3629,
+      "longitude": 78.4734,
+      "city": "Hyderabad",
+      "state": "Telangana",
+      "address": "Old City, Hyderabad",
+      "pincode": "500002",
+      "type": "landmark"
+    },
+    {
+      "id": "loc_014",
+      "name": "HITEC City",
+      "latitude": 17.4485,
+      "longitude": 78.3772,
+      "city": "Hyderabad",
+      "state": "Telangana",
+      "address": "Madhapur, Hyderabad",
+      "pincode": "500081",
+      "type": "it_park"
+    },
+    {
+      "id": "loc_015",
+      "name": "Marina Beach",
+      "latitude": 13.0499,
+      "longitude": 80.2824,
+      "city": "Chennai",
+      "state": "Tamil Nadu",
+      "address": "Marina, Chennai",
+      "pincode": "600001",
+      "type": "landmark"
+    }
+  ]
+}
