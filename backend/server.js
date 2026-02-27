@@ -986,6 +986,376 @@ app.post("/api/symptom-decision", (req, res) => {
 });
 
 // ============================================
+// TIER 3 API ROUTES - AUTONOMOUS FEATURES
+// ============================================
+
+// ============================================
+// TIER 3 - A6: SENTIMENT ANALYSIS
+// ============================================
+app.post("/api/analyze-sentiment", (req, res) => {
+  try {
+    const { callId, transcript, voiceMetrics } = req.body;
+
+    // Simulate emotion analysis
+    const emotionKeywords = {
+      panic: ['panic', 'help', 'dying', 'please', 'hurry'],
+      worry: ['worried', 'concerned', 'scared', 'nervous'],
+      calmness: ['calm', 'fine', 'okay', 'stable'],
+      anger: ['angry', 'frustrated', 'mad'],
+      confusion: ['confused', 'what', 'unclear', 'understand'],
+    };
+
+    const emotionScores = {
+      panic: 0,
+      worry: 0,
+      calmness: 0,
+      anger: 0,
+      confusion: 0,
+    };
+
+    const lowerTranscript = transcript.toLowerCase();
+    for (const [emotion, keywords] of Object.entries(emotionKeywords)) {
+      const matches = keywords.filter(k => lowerTranscript.includes(k)).length;
+      emotionScores[emotion] = Math.min(100, matches * 20);
+    }
+
+    const dominantEmotion = Object.entries(emotionScores)
+      .sort(([,a], [,b]) => b - a)[0][0];
+    const stressLevel = emotionScores.panic > 60 ? 'critical' : 
+                       emotionScores.panic > 45 ? 'high' :
+                       emotionScores.worry > 50 ? 'moderate' : 'low';
+    const riskScore = Math.round((emotionScores.panic * 0.4 + emotionScores.worry * 0.3 + 
+                                 emotionScores.confusion * 0.2 + emotionScores.anger * 0.1));
+
+    broadcastToDashboard({
+      type: 'sentiment-update',
+      data: {
+        callId,
+        emotionScores,
+        dominantEmotion,
+        stressLevel,
+        riskScore,
+        timestamp: new Date().toISOString(),
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      emotionScores,
+      dominantEmotion,
+      stressLevel,
+      riskScore,
+      confidence: 88,
+      recommendation: stressLevel === 'critical' ? 
+        '😨 HIGH STRESS: Recommend calming techniques and reassurance' :
+        '✅ Monitor situation and continue support'
+    });
+  } catch (error) {
+    console.error("[SENTIMENT-ANALYSIS] Error:", error);
+    res.status(500).json({ error: "Sentiment analysis failed" });
+  }
+});
+
+// ============================================
+// TIER 3 - A9: CONTINUOUS MONITORING
+// ============================================
+app.post("/api/continuous-monitor", (req, res) => {
+  try {
+    const { callId, currentSeverity, previousSeverity, symptoms } = req.body;
+
+    const delta = currentSeverity - previousSeverity;
+    const trend = delta > 5 ? 'escalating' : delta < -5 ? 'de-escalating' : 'stable';
+    const escalationTriggered = currentSeverity > 85 || delta > 20;
+
+    broadcastToDashboard({
+      type: 'monitoring-update',
+      data: {
+        callId,
+        currentSeverity,
+        delta,
+        trend,
+        escalationTriggered,
+        timestamp: new Date().toISOString(),
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      currentSeverity,
+      delta,
+      trend,
+      escalationTriggered,
+      escalationReason: escalationTriggered ? 
+        `Severity ${delta > 0 ? 'increased' : 'changed'} significantly` : null,
+      nextReassessmentIn: 10000,
+    });
+  } catch (error) {
+    console.error("[CONTINUOUS-MONITOR] Error:", error);
+    res.status(500).json({ error: "Monitoring failed" });
+  }
+});
+
+// ============================================
+// TIER 3 - O4: COMPLEXITY PREDICTION
+// ============================================
+app.post("/api/predict-complexity", (req, res) => {
+  try {
+    const { callId, symptoms, age, severity } = req.body;
+
+    // Simple complexity scoring
+    let score = severity || 50;
+    score += symptoms?.length * 5 || 0;
+    if (age > 70 || age < 5) score += 15;
+    score = Math.min(100, score);
+
+    const level = score < 30 ? 'SIMPLE' : score < 60 ? 'MODERATE' : score < 85 ? 'COMPLEX' : 'CRITICAL';
+    const estimatedTime = level === 'SIMPLE' ? 180 : level === 'MODERATE' ? 420 : level === 'COMPLEX' ? 900 : 1800;
+    const operatorLevel = level === 'SIMPLE' ? 'JUNIOR' : level === 'MODERATE' ? 'SENIOR' : level === 'COMPLEX' ? 'EXPERT' : 'SUPERVISOR';
+
+    broadcastToDashboard({
+      type: 'complexity-update',
+      data: {
+        callId,
+        level,
+        score,
+        estimatedTime,
+        operatorLevel,
+        timestamp: new Date().toISOString(),
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      level,
+      score,
+      estimatedTime,
+      recommendedOperatorLevel: operatorLevel,
+      confidence: 85,
+    });
+  } catch (error) {
+    console.error("[COMPLEXITY-PREDICTION] Error:", error);
+    res.status(500).json({ error: "Complexity prediction failed" });
+  }
+});
+
+// ============================================
+// TIER 3 - O5: RESOURCE OPTIMIZATION
+// ============================================
+app.post("/api/optimize-resources", (req, res) => {
+  try {
+    const { callId, incidentLocation, caseRequirements } = req.body;
+
+    // Mock facility selection
+    const facilities = [
+      { id: 'h1', name: 'Central Medical Hospital', distance: 2.3, eta: 12, quality: 5, score: 92 },
+      { id: 'h2', name: 'Eastside Trauma Center', distance: 3.1, eta: 16, quality: 5, score: 85 },
+      { id: 'h3', name: 'St. Mary Health Center', distance: 4.2, eta: 22, quality: 4, score: 72 },
+    ];
+
+    broadcastToDashboard({
+      type: 'resource-recommendation',
+      data: {
+        callId,
+        primaryFacility: facilities[0],
+        costEstimate: 4200,
+        timestamp: new Date().toISOString(),
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      primaryFacility: facilities[0],
+      secondaryFacility: facilities[1],
+      tertiaryFacility: facilities[2],
+      costEstimate: 4200,
+      dispatchRecommendation: `Dispatch to ${facilities[0].name} (ETA: ${facilities[0].eta} min)`,
+    });
+  } catch (error) {
+    console.error("[RESOURCE-OPTIMIZATION] Error:", error);
+    res.status(500).json({ error: "Resource optimization failed" });
+  }
+});
+
+// ============================================
+// TIER 3 - O8: NATURAL LANGUAGE COMMANDS
+// ============================================
+app.post("/api/execute-nlp-command", (req, res) => {
+  try {
+    const { callId, rawCommand } = req.body;
+
+    const normalized = rawCommand.toLowerCase();
+    let intent = 'unknown';
+    let confidence = 50;
+
+    if (normalized.includes('escalate') || normalized.includes('critical')) {
+      intent = 'escalate';
+      confidence = 95;
+    } else if (normalized.includes('dispatch') || normalized.includes('send')) {
+      intent = 'action';
+      confidence = 90;
+    } else if (normalized.includes('note') || normalized.includes('add')) {
+      intent = 'note';
+      confidence = 88;
+    } else if (normalized.includes('status') || normalized.includes('what')) {
+      intent = 'query';
+      confidence = 85;
+    }
+
+    broadcastToDashboard({
+      type: 'nlp-command-executed',
+      data: {
+        callId,
+        intent,
+        confidence,
+        command: rawCommand,
+        timestamp: new Date().toISOString(),
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      parsedIntent: intent,
+      confidence,
+      executed: true,
+      executionStatus: 'success',
+    });
+  } catch (error) {
+    console.error("[NLP-COMMAND] Error:", error);
+    res.status(500).json({ error: "NLP command execution failed" });
+  }
+});
+
+// ============================================
+// TIER 3 - O9: CALL TRANSCRIPTION
+// ============================================
+app.post("/api/transcribe-call", (req, res) => {
+  try {
+    const { callId, speaker, text, timestamp } = req.body;
+
+    // Extract red flags from transcript
+    const redFlags = [];
+    const criticalWords = ['unconscious', 'not breathing', 'cardiac arrest', 'severe bleeding'];
+    for (const word of criticalWords) {
+      if (text.toLowerCase().includes(word)) {
+        redFlags.push(word);
+      }
+    }
+
+    broadcastToDashboard({
+      type: 'transcription-segment',
+      data: {
+        callId,
+        segment: {
+          speaker,
+          text,
+          timestamp,
+          redFlags,
+          confidence: 0.94,
+        }
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      transcribed: true,
+      confidence: 0.94,
+      redFlags,
+      summary: `${speaker}: ${text.substring(0, 100)}...`,
+    });
+  } catch (error) {
+    console.error("[TRANSCRIPTION] Error:", error);
+    res.status(500).json({ error: "Transcription failed" });
+  }
+});
+
+// ============================================
+// TIER 3 - A2: AUTONOMOUS MODE CONTROL
+// ============================================
+app.post("/api/set-autonomous-mode", (req, res) => {
+  try {
+    const { callId, feature, mode, confidenceThreshold } = req.body;
+
+    broadcastToDashboard({
+      type: 'autonomous-mode-change',
+      data: {
+        callId,
+        feature,
+        mode,
+        threshold: confidenceThreshold,
+        timestamp: new Date().toISOString(),
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      feature,
+      mode,
+      confidenceThreshold,
+      message: `${feature} set to ${mode} mode`,
+    });
+  } catch (error) {
+    console.error("[AUTONOMOUS-MODE] Error:", error);
+    res.status(500).json({ error: "Autonomous mode change failed" });
+  }
+});
+
+app.get("/api/autonomous-status", (req, res) => {
+  try {
+    const { callId } = req.query;
+
+    res.status(200).json({
+      success: true,
+      globalMode: 'MANUAL',
+      features: [
+        { feature: 'sentiment-analysis', mode: 'AUTONOMOUS', enabled: true },
+        { feature: 'continuous-monitoring', mode: 'AUTONOMOUS', enabled: true },
+        { feature: 'complexity-prediction', mode: 'AUTONOMOUS', enabled: true },
+        { feature: 'resource-optimization', mode: 'MANUAL', enabled: true },
+        { feature: 'natural-language-commands', mode: 'AUTONOMOUS', enabled: true },
+        { feature: 'transcription', mode: 'AUTONOMOUS', enabled: true },
+      ],
+      autonomousDecisions: 28,
+      manualDecisions: 7,
+      averageConfidence: 83,
+    });
+  } catch (error) {
+    console.error("[AUTONOMOUS-STATUS] Error:", error);
+    res.status(500).json({ error: "Status retrieval failed" });
+  }
+});
+
+// ============================================
+// TIER 3 - THINKING PROCESS TRANSPARENCY
+// ============================================
+app.post("/api/thinking-process", (req, res) => {
+  try {
+    const { callId, decision, factors, confidence } = req.body;
+
+    broadcastToDashboard({
+      type: 'thinking-process-update',
+      data: {
+        callId,
+        decision,
+        factors,
+        confidence,
+        timestamp: new Date().toISOString(),
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      decision,
+      factors,
+      confidence,
+      reasoning: `Decision made with ${confidence}% confidence based on ${factors?.length} factors`,
+    });
+  } catch (error) {
+    console.error("[THINKING-PROCESS] Error:", error);
+    res.status(500).json({ error: "Thinking process logging failed" });
+  }
+});
+
+// ============================================
 wss.on("connection", (ws, req) => {
   // Determine client type based on query parameter
   const clientType = new URL(

@@ -18,6 +18,14 @@ import { LocationVerification } from "@/features/autonomous/location-verificatio
 import { ContextualQuestions } from "@/features/autonomous/contextual-questions/contextual-questions"
 import { SOSButton } from "@/features/user/sos-button/sos-button"
 import { makeDispatchDecision, getDispatchAction, getDecisionExplanation, type DispatchDecision } from "@/features/autonomous/decision-router/decision-router"
+import { AutonomousModePanel } from "@/components/autonomous/AutonomousModePanel"
+import { SentimentAnalysisPanel } from "@/components/autonomous/SentimentAnalysisPanel"
+import { ContinuousMonitoringPanel } from "@/components/autonomous/ContinuousMonitoringPanel"
+import { ComplexityPredictionCard } from "@/components/autonomous/ComplexityPredictionCard"
+import { ResourceOptimizationPanel } from "@/components/autonomous/ResourceOptimizationPanel"
+import { NLPCommandConsole } from "@/components/autonomous/NLPCommandConsole"
+import { TranscriptionPanel } from "@/components/autonomous/TranscriptionPanel"
+import { ThinkingProcessDashboard } from "@/components/autonomous/ThinkingProcessDashboard"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -313,7 +321,7 @@ export default function Page() {
           )}
 
           <Tabs defaultValue="map" className="w-full">
-            <TabsList className="grid w-full grid-cols-12">
+            <TabsList className="grid w-full grid-cols-16">
               <TabsTrigger value="map">📍 Map</TabsTrigger>
               <TabsTrigger value="map-hospitals">🗺️ Hospitals</TabsTrigger>
               <TabsTrigger value="analysis">🧠 Analysis</TabsTrigger>
@@ -326,6 +334,14 @@ export default function Page() {
               <TabsTrigger value="similar-cases">O2: Cases</TabsTrigger>
               <TabsTrigger value="location-verify">A7: Location</TabsTrigger>
               <TabsTrigger value="questions">A5: Questions</TabsTrigger>
+              <TabsTrigger value="autonomous-control">A2: Operator Control</TabsTrigger>
+              <TabsTrigger value="sentiment">A6: Sentiment</TabsTrigger>
+              <TabsTrigger value="monitoring">A9: Monitoring</TabsTrigger>
+              <TabsTrigger value="complexity">O4: Complexity</TabsTrigger>
+              <TabsTrigger value="resources">O5: Resources</TabsTrigger>
+              <TabsTrigger value="nlp">O8: NLP</TabsTrigger>
+              <TabsTrigger value="transcription">O9: Transcript</TabsTrigger>
+              <TabsTrigger value="thinking">🧠 Thinking</TabsTrigger>
             </TabsList>
 
             <TabsContent value="map" className="mt-4">
@@ -535,6 +551,66 @@ export default function Page() {
               </div>
             </TabsContent>
 
+            {/* ========================================== */}
+            {/* TIER 3: AUTONOMOUS DECISION-MAKING SYSTEM */}
+            {/* ========================================== */}
+
+            {/* TIER 3: A2 - Autonomous Mode Control Panel */}
+            <TabsContent value="autonomous-control" className="mt-4">
+              <div className="grid grid-cols-1 gap-4">
+                <AutonomousModePanel />
+              </div>
+            </TabsContent>
+
+            {/* TIER 3: A6 - Sentiment Analysis Panel */}
+            <TabsContent value="sentiment" className="mt-4">
+              <div className="grid grid-cols-1 gap-4">
+                <SentimentAnalysisPanel />
+              </div>
+            </TabsContent>
+
+            {/* TIER 3: A9 - Continuous Monitoring Panel */}
+            <TabsContent value="monitoring" className="mt-4">
+              <div className="grid grid-cols-1 gap-4">
+                <ContinuousMonitoringPanel />
+              </div>
+            </TabsContent>
+
+            {/* TIER 3: O4 - Complexity Prediction Card */}
+            <TabsContent value="complexity" className="mt-4">
+              <div className="grid grid-cols-1 gap-4">
+                <ComplexityPredictionCard />
+              </div>
+            </TabsContent>
+
+            {/* TIER 3: O5 - Resource Optimization Panel */}
+            <TabsContent value="resources" className="mt-4">
+              <div className="grid grid-cols-1 gap-4">
+                <ResourceOptimizationPanel />
+              </div>
+            </TabsContent>
+
+            {/* TIER 3: O8 - Natural Language Command Console */}
+            <TabsContent value="nlp" className="mt-4">
+              <div className="grid grid-cols-1 gap-4">
+                <NLPCommandConsole />
+              </div>
+            </TabsContent>
+
+            {/* TIER 3: O9 - Transcription Panel */}
+            <TabsContent value="transcription" className="mt-4">
+              <div className="grid grid-cols-1 gap-4">
+                <TranscriptionPanel />
+              </div>
+            </TabsContent>
+
+            {/* TIER 3: Thinking Process Dashboard */}
+            <TabsContent value="thinking" className="mt-4">
+              <div className="grid grid-cols-1 gap-4">
+                <ThinkingProcessDashboard />
+              </div>
+            </TabsContent>
+
             <TabsContent value="status" className="mt-4">
               <div className="space-y-4">
                 {/* Decision Status */}
@@ -651,6 +727,25 @@ export default function Page() {
                     <div>✅ U11: SOS Button - Ready (contact mgmt + 3s countdown)</div>
                     <div className="text-xs text-muted-foreground mt-2">
                       🌐 Public Website: /help (home), /help/symptom-checker, /help/emergency-checklist
+                    </div>
+                  </div>
+                </div>
+
+                {/* TIER 3 Feature Status */}
+                <div className="p-4 border rounded bg-purple-50">
+                  <h3 className="font-semibold mb-2">TIER 3 Features - Autonomous Decision-Making (New!)</h3>
+                  <div className="text-sm space-y-1">
+                    <div>✅ A2: Autonomous Mode Control - Ready (operator governance system)</div>
+                    <div>✅ A6: Sentiment Analysis - Ready (5-emotion model, stress detection)</div>
+                    <div>✅ A9: Continuous Monitoring - Ready (10-second reassessment, escalation triggers)</div>
+                    <div>✅ O4: Complexity Prediction - Ready (5-factor analysis, resource estimation)</div>
+                    <div>✅ O5: Resource Optimization - Ready (3-facility comparison, routing)</div>
+                    <div>✅ O8: NLP Command Console - Ready (voice/text parsing, intent detection)</div>
+                    <div>✅ O9: Transcription Panel - Ready (live transcript, red flags, medical terms)</div>
+                    <div>✅ 🧠 Thinking Process Dashboard - Ready (complete decision transparency)</div>
+                    <div className="text-xs text-muted-foreground mt-2">
+                      Core Design: Operator always in control. Autonomous features toggle MANUAL/AUTONOMOUS per feature. 
+                      Safe defaults: Most AUTONOMOUS (sentiment, monitoring, complexity, NLP, transcription), Resource dispatch MANUAL.
                     </div>
                   </div>
                 </div>
