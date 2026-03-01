@@ -143,7 +143,7 @@ export function AppSidebar({ wsData, ...props }: AppSidebarProps) {
   const selectedEmergency = useEmergencyStore((state) => state.selectedEmergency)
   const setSelectedEmergency = useEmergencyStore((state) => state.setSelectedEmergency)
 
-  // Set initial selected emergency if none is selected
+  // Set initial selected emergency only on mount
   React.useEffect(() => {
     if (!selectedEmergency && staticEmergencies.length > 0) {
       const firstEmergency = staticEmergencies[0];
@@ -151,7 +151,7 @@ export function AppSidebar({ wsData, ...props }: AppSidebarProps) {
         setSelectedEmergency(firstEmergency);
       }
     }
-  }, [selectedEmergency, staticEmergencies, setSelectedEmergency]);
+  }, []); // Only run once on mount, not when selectedEmergency changes
 
   // Handle new emergency data
   React.useEffect(() => {

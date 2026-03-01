@@ -9,7 +9,18 @@ import dotenv from "dotenv";
 dotenv.config();
 const app = express();
 const server = createServer(app);
-const wss = new WebSocketServer({ server });
+
+// Configure WebSocket server with proper settings
+const wss = new WebSocketServer({ 
+  server,
+  perMessageDeflate: false, // Disable compression for better performance
+  clientTracking: true
+});
+
+// Add error handler to WebSocket server
+wss.on('error', (error) => {
+  console.error('[WebSocket Server Error]', error);
+});
 
 // Storage for dispatch and escalation data (in-memory for MVP)
 const dispatchRecords = new Map();
@@ -24,6 +35,27 @@ const clients = {
 // Middleware to parse Twilio webhooks
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok',
+    server: 'Backend Server',
+    websockets_connected: {
+      dashboard: clients.dashboard.size,
+      mobileApps: clients.mobileApps.size
+    }
+  });
+});
+
+// Test WebSocket endpoint info
+app.get('/ws-info', (req, res) => {
+  res.json({
+    message: 'WebSocket server is running',
+    connect_to: 'ws://localhost:8080/?type=dashboard',
+    or: 'ws://localhost:8080/?type=mobile-app'
+  });
+});
 
 if (!process.env.GEMINI_API_KEY) {
   console.error("GEMINI_API_KEY is not defined in environment variables");
@@ -1926,19 +1958,29 @@ ${auditTrail.requiresReview ? '- ⚠️ FLAG: Recommend senior operator review' 
 
 // ============================================
 wss.on("connection", (ws, req) => {
+  console.log(`[WebSocket] New connection attempt from ${req.socket.remoteAddress}`);
+  console.log(`[WebSocket] URL: ${req.url}`);
+  
   // Determine client type based on query parameter
   const clientType = new URL(
     req.url,
     `http://${req.headers.host}`,
   ).searchParams.get("type");
 
+  console.log(`[WebSocket] Client type: ${clientType || 'unknown'}`);
+
   // Add client to appropriate group
   if (clientType === "dashboard") {
     clients.dashboard.add(ws);
-    console.log("Dashboard client connected");
+    console.log(`[WebSocket] Dashboard client connected. Total dashboard clients: ${clients.dashboard.size}`);
+    ws.send(JSON.stringify({ type: 'connection-success', message: 'Connected to dashboard WebSocket' }));
   } else if (clientType === "mobile-app") {
     clients.mobileApps.add(ws);
-    console.log("Mobile app client connected");
+    console.log(`[WebSocket] Mobile app client connected. Total mobile clients: ${clients.mobileApps.size}`);
+  } else {
+    console.log(`[WebSocket] Unknown client type, closing connection`);
+    ws.close();
+    return;
   }
 
   // Message handling
@@ -1967,11 +2009,19 @@ wss.on("connection", (ws, req) => {
 
   // Connection close handler
   ws.on("close", () => {
+    console.log(`[WebSocket] Client disconnected (${clientType})`);
     if (clientType === "dashboard") {
       clients.dashboard.delete(ws);
+      console.log(`[WebSocket] Dashboard clients remaining: ${clients.dashboard.size}`);
     } else if (clientType === "mobile-app") {
       clients.mobileApps.delete(ws);
+      console.log(`[WebSocket] Mobile clients remaining: ${clients.mobileApps.size}`);
     }
+  });
+
+  // Connection error handler
+  ws.on("error", (error) => {
+    console.error(`[WebSocket] Client error (${clientType}):`, error.message);
   });
 });
 
@@ -1995,6 +2045,24 @@ function broadcastToMobileApps(message) {
 
 // Start server
 const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`\n╔════════════════════════════════════════╗`);
+  console.log(`║  Emergency Response Backend Started   ║`);
+  console.log(`╠════════════════════════════════════════╣`);
+  console.log(`║  HTTP Server: http://0.0.0.0:${PORT}`);
+  console.log(`║  WebSocket:   ws://0.0.0.0:${PORT}    ║`);
+  console.log(`║  Listening for:                      ║`);
+  console.log(`║    - Dashboard clients               ║`);
+  console.log(`║    - Mobile app clients              ║`);
+  console.log(`║    - Twilio webhooks                 ║`);
+  console.log(`╚════════════════════════════════════════╝\n`);
+});
+
+// Handle server errors
+server.on('error', (error) => {
+  console.error('[Server Error]', error);
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Try killing the process or using a different port.`);
+    process.exit(1);
+  }
 });

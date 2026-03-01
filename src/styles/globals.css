@@ -1,6 +1,158 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Professional Dashboard Styling */
+@layer components {
+  /* Z-Index Management */
+  .z-emergency-button {
+    z-index: 40 !important;
+  }
+  
+  .z-modal {
+    z-index: 50 !important;
+  }
+  
+  .z-toast {
+    z-index: 60 !important;
+  }
+  
+  .z-dropdown {
+    z-index: 45 !important;
+  }
+
+  /* Tab Styling */
+  .tabs-container {
+    @apply flex flex-col gap-6;
+  }
+
+  .tabs-list-scroll {
+    @apply overflow-x-auto overflow-y-hidden;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 116, 139, 0.3) transparent;
+  }
+
+  .tabs-list-scroll::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .tabs-list-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .tabs-list-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.3);
+    border-radius: 2px;
+  }
+
+  /* Button Styling - Emergency Focus */
+  .btn-emergency {
+    @apply bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-dispatch {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-action {
+    @apply bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-success {
+    @apply bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-warning {
+    @apply bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Card Styling - Professional */
+  .card-emergency {
+    @apply border-l-4 border-red-600 bg-gradient-to-r from-red-50 to-white;
+  }
+
+  .card-warning {
+    @apply border-l-4 border-yellow-600 bg-gradient-to-r from-yellow-50 to-white;
+  }
+
+  .card-success {
+    @apply border-l-4 border-green-600 bg-gradient-to-r from-green-50 to-white;
+  }
+
+  .card-info {
+    @apply border-l-4 border-blue-600 bg-gradient-to-r from-blue-50 to-white;
+  }
+
+  /* Header Styling */
+  .dashboard-header {
+    @apply border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white shadow-sm;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .status-badge-active {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .status-badge-warning {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+
+  .status-badge-critical {
+    @apply bg-red-100 text-red-800;
+  }
+
+  /* Tab Trigger Styling */
+  [role="tab"] {
+    @apply transition-all duration-200 cursor-pointer;
+  }
+
+  [role="tab"][aria-selected="true"] {
+    @apply font-semibold shadow-sm;
+  }
+
+  /* Responsive Padding */
+  .p-safe {
+    @apply p-4 md:p-6 lg:p-8;
+  }
+
+  /* Animation */
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Loading State */
+  .loading-spinner {
+    @apply border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -79,4 +231,17 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Ensure Mapbox layers don't accidentally cover app UI overlays (toasts, portals, sheets) */
+.mapboxgl-canvas,
+.mapboxgl-control-container,
+.mapboxgl-ctrl {
+  z-index: 0 !important;
+}
+
+/* Ensure common fixed UI overlays render above the map */
+.fixed.inset-0[style],
+.fixed.inset-0 {
+  z-index: var(--top-z-index, 2147483647) !important;
 }

@@ -2,13 +2,13 @@
 
 import { ReactNode } from 'react'
 import i18n from 'i18next'
-import { InitReactI18next, I18nextProvider } from 'react-i18next'
+import { initReactI18next, I18nextProvider } from 'react-i18next'
 import enTranslations from '@/i18n/locales/en.json'
 import hiTranslations from '@/i18n/locales/hi.json'
 
 // Initialize i18n only once
 if (!i18n.isInitialized) {
-  i18n.use(InitReactI18next).init({
+  i18n.use(initReactI18next).init({
     resources: {
       en: { translation: enTranslations },
       hi: { translation: hiTranslations },

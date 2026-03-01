@@ -9,6 +9,10 @@ export default {
   		fontFamily: {
   			sans: ["var(--font-geist-sans)", ...fontFamily.sans]
   		},
+  		gridTemplateColumns: {
+  			'16': 'repeat(16, minmax(0, 1fr))',
+  			'20': 'repeat(20, minmax(0, 1fr))',
+  		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
