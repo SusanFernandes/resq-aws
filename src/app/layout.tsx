@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import { Toaster } from "@/components/ui/toaster";
-import { I18nProvider } from "@/components/providers/i18n-provider";
+
 
 export const metadata: Metadata = {
   title: "Emergency Response System",
@@ -18,10 +18,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={GeistSans.variable}>
       <body suppressHydrationWarning>
-        <I18nProvider>
-          {children}
-          <Toaster />
-        </I18nProvider>
+        {children}
+        <Toaster />
       </body>
     </html>
   );

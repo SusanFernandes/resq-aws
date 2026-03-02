@@ -44,6 +44,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { AlertTriangle, CheckCircle2, Clock, X } from "lucide-react"
+import { GoogleTranslate } from "@/components/google-translate"
 
 export default function Page() {
   const [wsData, setWsData] = useState<WebSocketData | null>(null)
@@ -83,7 +84,7 @@ export default function Page() {
         try {
           const response = JSON.parse(event.data)
           console.log('Raw WebSocket message:', response)
-          
+
           if (response.type === "twilio-update") {
             console.log('Processing Twilio update:', response.data)
             setWsData({
@@ -155,7 +156,7 @@ export default function Page() {
         // CRITICAL FIX: Parse the response JSON
         const analysis = await response.json()
         setAiAnalysis(analysis)
-        
+
         // Make dispatch decision based on analysis
         const decision = makeDispatchDecision(analysis)
         setDispatchDecision(decision)
@@ -317,6 +318,7 @@ export default function Page() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <GoogleTranslate />
               <div className="flex flex-col items-end gap-1">
                 <span className="status-badge status-badge-active text-xs">
                   <span className="h-2 w-2 rounded-full bg-green-600 animate-pulse"></span>
@@ -355,15 +357,14 @@ export default function Page() {
           <div className="w-52 bg-gradient-to-b from-slate-900 to-slate-800 text-white flex flex-col border-r border-slate-700 overflow-y-auto">
             {/* Decision Alert */}
             {dispatchDecision && (
-              <div className={`p-3 m-2 rounded-lg text-xs font-medium border ${
-                dispatchDecision.route === 'AUTO_DISPATCH' 
-                  ? 'bg-green-900/30 border-green-700 text-green-100'
-                  : dispatchDecision.route === 'ESCALATE_TO_HUMAN'
-                    ? 'bg-red-900/30 border-red-700 text-red-100'
-                    : 'bg-amber-900/30 border-amber-700 text-amber-100'
-              }`}>
+              <div className={`p-3 m-2 rounded-lg text-xs font-medium border ${dispatchDecision.route === 'AUTO_DISPATCH'
+                ? 'bg-green-900/30 border-green-700 text-green-100'
+                : dispatchDecision.route === 'ESCALATE_TO_HUMAN'
+                  ? 'bg-red-900/30 border-red-700 text-red-100'
+                  : 'bg-amber-900/30 border-amber-700 text-amber-100'
+                }`}>
                 <div className="font-semibold mb-1">
-                  {dispatchDecision.route === 'AUTO_DISPATCH' 
+                  {dispatchDecision.route === 'AUTO_DISPATCH'
                     ? 'Ready to Dispatch'
                     : dispatchDecision.route === 'ESCALATE_TO_HUMAN'
                       ? 'Escalation Needed'
@@ -380,41 +381,37 @@ export default function Page() {
                 <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2 py-2">Core</div>
                 <button
                   onClick={() => setActiveTab('analysis')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'analysis' 
-                      ? 'bg-blue-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'analysis'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   Emergency Analysis
                 </button>
                 <button
                   onClick={() => setActiveTab('intake')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'intake' 
-                      ? 'bg-blue-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'intake'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   Intake Form
                 </button>
                 <button
                   onClick={() => setActiveTab('protocol')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'protocol' 
-                      ? 'bg-blue-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'protocol'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   Protocol Reference
                 </button>
                 <button
                   onClick={() => setActiveTab('hospital')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'hospital' 
-                      ? 'bg-blue-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'hospital'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   Hospital Search
                 </button>
@@ -425,21 +422,19 @@ export default function Page() {
                 <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2 py-2 mt-2">Dispatch</div>
                 <button
                   onClick={() => setActiveTab('dispatch')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                    activeTab === 'dispatch' 
-                      ? 'bg-red-600 text-white' 
-                      : 'text-slate-300 hover:bg-red-900/40'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'dispatch'
+                    ? 'bg-red-600 text-white'
+                    : 'text-slate-300 hover:bg-red-900/40'
+                    }`}
                 >
                   Auto Dispatch
                 </button>
                 <button
                   onClick={() => setActiveTab('escalation')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                    activeTab === 'escalation' 
-                      ? 'bg-red-600 text-white' 
-                      : 'text-slate-300 hover:bg-red-900/40'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'escalation'
+                    ? 'bg-red-600 text-white'
+                    : 'text-slate-300 hover:bg-red-900/40'
+                    }`}
                 >
                   Escalation Manager
                 </button>
@@ -450,41 +445,37 @@ export default function Page() {
                 <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2 py-2 mt-2">Operator Tools</div>
                 <button
                   onClick={() => setActiveTab('live-analysis')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'live-analysis' 
-                      ? 'bg-amber-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'live-analysis'
+                    ? 'bg-amber-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   Live Analysis
                 </button>
                 <button
                   onClick={() => setActiveTab('similar-cases')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'similar-cases' 
-                      ? 'bg-amber-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'similar-cases'
+                    ? 'bg-amber-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   Similar Cases
                 </button>
                 <button
                   onClick={() => setActiveTab('location-verify')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'location-verify' 
-                      ? 'bg-amber-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'location-verify'
+                    ? 'bg-amber-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   Location Verify
                 </button>
                 <button
                   onClick={() => setActiveTab('questions')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'questions' 
-                      ? 'bg-amber-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'questions'
+                    ? 'bg-amber-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   Contextual Questions
                 </button>
@@ -495,81 +486,73 @@ export default function Page() {
                 <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2 py-2 mt-2">AI & Autonomous</div>
                 <button
                   onClick={() => setActiveTab('autonomous-control')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'autonomous-control' 
-                      ? 'bg-purple-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'autonomous-control'
+                    ? 'bg-purple-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   Autonomous Control
                 </button>
                 <button
                   onClick={() => setActiveTab('sentiment')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'sentiment' 
-                      ? 'bg-purple-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'sentiment'
+                    ? 'bg-purple-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   Sentiment Analysis
                 </button>
                 <button
                   onClick={() => setActiveTab('monitoring')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'monitoring' 
-                      ? 'bg-purple-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'monitoring'
+                    ? 'bg-purple-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   Continuous Monitoring
                 </button>
                 <button
                   onClick={() => setActiveTab('complexity')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'complexity' 
-                      ? 'bg-purple-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'complexity'
+                    ? 'bg-purple-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   Complexity Analysis
                 </button>
                 <button
                   onClick={() => setActiveTab('resources')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'resources' 
-                      ? 'bg-purple-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'resources'
+                    ? 'bg-purple-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   Resource Optimization
                 </button>
                 <button
                   onClick={() => setActiveTab('nlp')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'nlp' 
-                      ? 'bg-purple-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'nlp'
+                    ? 'bg-purple-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   NLP Commands
                 </button>
                 <button
                   onClick={() => setActiveTab('transcription')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'transcription' 
-                      ? 'bg-purple-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'transcription'
+                    ? 'bg-purple-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   Transcription
                 </button>
                 <button
                   onClick={() => setActiveTab('thinking')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'thinking' 
-                      ? 'bg-purple-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'thinking'
+                    ? 'bg-purple-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   Thinking Process
                 </button>
@@ -580,11 +563,10 @@ export default function Page() {
                 <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2 py-2 mt-2">System</div>
                 <button
                   onClick={() => setActiveTab('status')}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                    activeTab === 'status' 
-                      ? 'bg-slate-600 text-white' 
-                      : 'text-slate-300 hover:bg-slate-700'
-                  }`}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${activeTab === 'status'
+                    ? 'bg-slate-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-700'
+                    }`}
                 >
                   System Status
                 </button>
@@ -607,7 +589,7 @@ export default function Page() {
 
               {/* OVERLAY MODAL - FEATURES */}
               {activeTab && (
-                <div 
+                <div
                   className="fixed inset-0 bg-black/40 z-40 flex items-center justify-center p-4"
                   onClick={(e) => {
                     if (e.target === e.currentTarget) {
@@ -617,7 +599,7 @@ export default function Page() {
                   role="dialog"
                   aria-modal="true"
                 >
-                  <div 
+                  <div
                     className="w-full max-w-2xl max-h-[85vh] bg-white rounded-xl shadow-2xl border border-blue-200 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
                     onClick={(e) => e.stopPropagation()}
                   >
@@ -638,204 +620,204 @@ export default function Page() {
 
                     {/* Modal Content */}
                     <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                        {/* ANALYSIS */}
-                        {activeTab === 'analysis' && (
-                          <div className="space-y-3">
-                            <div>
-                              <h3 className="font-semibold text-sm mb-2">Current Emergency</h3>
-                              {wsData?.data ? (
-                                <div className="bg-slate-50 p-3 rounded-lg border text-sm space-y-1">
-                                  <div><strong>ID:</strong> {wsData.data.id}</div>
-                                  <div><strong>Time:</strong> {new Date(wsData.data.timestamp).toLocaleTimeString()}</div>
-                                  <div><strong>Messages:</strong> {wsData.data.originalConversation?.length || 0}</div>
-                                </div>
-                              ) : (
-                                <p className="text-xs text-slate-500 bg-slate-50 p-2 rounded">Waiting for emergency data...</p>
-                              )}
-                            </div>
-                            <div>
-                              <h3 className="font-semibold text-sm mb-2">AI Analysis</h3>
-                              <AIAnalysisCard analysis={aiAnalysis} isLoading={isAnalyzing} />
-                            </div>
+                      {/* ANALYSIS */}
+                      {activeTab === 'analysis' && (
+                        <div className="space-y-3">
+                          <div>
+                            <h3 className="font-semibold text-sm mb-2">Current Emergency</h3>
+                            {wsData?.data ? (
+                              <div className="bg-slate-50 p-3 rounded-lg border text-sm space-y-1">
+                                <div><strong>ID:</strong> {wsData.data.id}</div>
+                                <div><strong>Time:</strong> {new Date(wsData.data.timestamp).toLocaleTimeString()}</div>
+                                <div><strong>Messages:</strong> {wsData.data.originalConversation?.length || 0}</div>
+                              </div>
+                            ) : (
+                              <p className="text-xs text-slate-500 bg-slate-50 p-2 rounded">Waiting for emergency data...</p>
+                            )}
                           </div>
-                        )}
+                          <div>
+                            <h3 className="font-semibold text-sm mb-2">AI Analysis</h3>
+                            <AIAnalysisCard analysis={aiAnalysis} isLoading={isAnalyzing} />
+                          </div>
+                        </div>
+                      )}
 
-                        {/* FORM */}
-                        {activeTab === 'intake' && (
-                          <OperatorIntakeForm
-                            analysis={aiAnalysis}
-                            onDispatch={(data) => {
-                              setDispatchedFormData(data)
-                              handleDispatch(data)
-                            }}
-                            isLoading={isAnalyzing}
-                          />
-                        )}
+                      {/* FORM */}
+                      {activeTab === 'intake' && (
+                        <OperatorIntakeForm
+                          analysis={aiAnalysis}
+                          onDispatch={(data) => {
+                            setDispatchedFormData(data)
+                            handleDispatch(data)
+                          }}
+                          isLoading={isAnalyzing}
+                        />
+                      )}
 
-                        {/* PROTOCOL */}
-                        {activeTab === 'protocol' && (
-                          <ProtocolReference
-                            analysis={aiAnalysis}
-                            onExecuteProtocol={handleExecuteProtocol}
-                            isLoading={isAnalyzing}
-                          />
-                        )}
+                      {/* PROTOCOL */}
+                      {activeTab === 'protocol' && (
+                        <ProtocolReference
+                          analysis={aiAnalysis}
+                          onExecuteProtocol={handleExecuteProtocol}
+                          isLoading={isAnalyzing}
+                        />
+                      )}
 
-                        {/* DISPATCH */}
-                        {activeTab === 'dispatch' && (
-                          <AutoDispatch
-                            analysis={aiAnalysis}
-                            selectedHospital={selectedHospital}
-                            isLoading={isAnalyzing}
-                            onDispatchSuccess={(response) => console.log('Dispatch Success:', response)}
-                            onDispatchError={(error) => console.error('Dispatch Error:', error)}
-                          />
-                        )}
+                      {/* DISPATCH */}
+                      {activeTab === 'dispatch' && (
+                        <AutoDispatch
+                          analysis={aiAnalysis}
+                          selectedHospital={selectedHospital}
+                          isLoading={isAnalyzing}
+                          onDispatchSuccess={(response) => console.log('Dispatch Success:', response)}
+                          onDispatchError={(error) => console.error('Dispatch Error:', error)}
+                        />
+                      )}
 
-                        {/* ESCALATION */}
-                        {activeTab === 'escalation' && (
-                          <EscalationManager
-                            analysis={aiAnalysis}
-                            selectedHospital={selectedHospital}
-                            emergencyId={wsData?.data?.id || `E-${Date.now()}`}
-                            onEscalationCreated={(ticket) => console.log('Escalation Created:', ticket)}
-                            onDecisionMade={(ticket) => console.log('Decision Made:', ticket)}
-                          />
-                        )}
+                      {/* ESCALATION */}
+                      {activeTab === 'escalation' && (
+                        <EscalationManager
+                          analysis={aiAnalysis}
+                          selectedHospital={selectedHospital}
+                          emergencyId={wsData?.data?.id || `E-${Date.now()}`}
+                          onEscalationCreated={(ticket) => console.log('Escalation Created:', ticket)}
+                          onDecisionMade={(ticket) => console.log('Decision Made:', ticket)}
+                        />
+                      )}
 
-                        {/* LIVE ANALYSIS */}
-                        {activeTab === 'live-analysis' && (
-                          <>
-                            {liveAnalysisId ? (
-                              <LiveAnalysisPanel
-                                analysisId={liveAnalysisId}
-                                isActive={true}
-                                onUpdate={(analysis) => {
-                                  if (analysis.symptoms) setDetectedSymptoms(analysis.symptoms)
-                                }}
-                              />
-                            ) : (
-                              <div className="p-3 border rounded bg-slate-50 text-sm text-center">
-                                <p className="text-xs text-slate-600 mb-2">Live analysis will start when a call is initiated</p>
-                                <button
-                                  onClick={() => setLiveAnalysisId(`ANALYSIS-${Date.now()}`)}
-                                  className="text-blue-600 text-xs hover:underline font-medium"
-                                >
-                                  Start test analysis
-                                </button>
-                              </div>
-                            )}
-                          </>
-                        )}
+                      {/* LIVE ANALYSIS */}
+                      {activeTab === 'live-analysis' && (
+                        <>
+                          {liveAnalysisId ? (
+                            <LiveAnalysisPanel
+                              analysisId={liveAnalysisId}
+                              isActive={true}
+                              onUpdate={(analysis) => {
+                                if (analysis.symptoms) setDetectedSymptoms(analysis.symptoms)
+                              }}
+                            />
+                          ) : (
+                            <div className="p-3 border rounded bg-slate-50 text-sm text-center">
+                              <p className="text-xs text-slate-600 mb-2">Live analysis will start when a call is initiated</p>
+                              <button
+                                onClick={() => setLiveAnalysisId(`ANALYSIS-${Date.now()}`)}
+                                className="text-blue-600 text-xs hover:underline font-medium"
+                              >
+                                Start test analysis
+                              </button>
+                            </div>
+                          )}
+                        </>
+                      )}
 
-                        {/* SIMILAR CASES */}
-                        {activeTab === 'similar-cases' && (
-                          <>
-                            {detectedSymptoms.length > 0 ? (
-                              <SimilarCasesPanel
-                                symptoms={detectedSymptoms}
-                                severity={aiAnalysis?.severity || 'MEDIUM'}
-                              />
-                            ) : (
-                              <div className="p-3 border rounded bg-slate-50 text-xs text-slate-600 text-center">
-                                Similar cases appear once symptoms are detected
-                              </div>
-                            )}
-                          </>
-                        )}
+                      {/* SIMILAR CASES */}
+                      {activeTab === 'similar-cases' && (
+                        <>
+                          {detectedSymptoms.length > 0 ? (
+                            <SimilarCasesPanel
+                              symptoms={detectedSymptoms}
+                              severity={aiAnalysis?.severity || 'MEDIUM'}
+                            />
+                          ) : (
+                            <div className="p-3 border rounded bg-slate-50 text-xs text-slate-600 text-center">
+                              Similar cases appear once symptoms are detected
+                            </div>
+                          )}
+                        </>
+                      )}
 
-                        {/* LOCATION VERIFY */}
-                        {activeTab === 'location-verify' && (
-                          <LocationVerification
-                            rawLocation={aiAnalysis?.location?.address}
-                            latitude={aiAnalysis?.location?.latitude}
-                            longitude={aiAnalysis?.location?.longitude}
-                            onLocationConfirmed={(location) => console.log('Location Confirmed:', location)}
-                          />
-                        )}
+                      {/* LOCATION VERIFY */}
+                      {activeTab === 'location-verify' && (
+                        <LocationVerification
+                          rawLocation={aiAnalysis?.location?.address}
+                          latitude={aiAnalysis?.location?.latitude}
+                          longitude={aiAnalysis?.location?.longitude}
+                          onLocationConfirmed={(location) => console.log('Location Confirmed:', location)}
+                        />
+                      )}
 
-                        {/* HOSPITAL */}
-                        {activeTab === 'hospital' && (
-                          <HospitalFinder
-                            analysis={aiAnalysis}
-                            onSelectHospital={(hospital) => {
-                              setSelectedHospital(hospital)
-                            }}
-                            isLoading={isAnalyzing}
-                          />
-                        )}
+                      {/* HOSPITAL */}
+                      {activeTab === 'hospital' && (
+                        <HospitalFinder
+                          analysis={aiAnalysis}
+                          onSelectHospital={(hospital) => {
+                            setSelectedHospital(hospital)
+                          }}
+                          isLoading={isAnalyzing}
+                        />
+                      )}
 
-                        {/* CONTEXTUAL QUESTIONS */}
-                        {activeTab === 'questions' && (
-                          <ContextualQuestions
-                            symptoms={detectedSymptoms}
-                            previousAnswers={{}}
-                            onAnswerSubmitted={(questionId, answer) => console.log(`Question ${questionId}: ${answer}`)}
-                            isLoading={false}
-                          />
-                        )}
+                      {/* CONTEXTUAL QUESTIONS */}
+                      {activeTab === 'questions' && (
+                        <ContextualQuestions
+                          symptoms={detectedSymptoms}
+                          previousAnswers={{}}
+                          onAnswerSubmitted={(questionId, answer) => console.log(`Question ${questionId}: ${answer}`)}
+                          isLoading={false}
+                        />
+                      )}
 
-                        {/* AUTONOMOUS CONTROL */}
-                        {activeTab === 'autonomous-control' && (
-                          <AutonomousModePanel />
-                        )}
+                      {/* AUTONOMOUS CONTROL */}
+                      {activeTab === 'autonomous-control' && (
+                        <AutonomousModePanel />
+                      )}
 
-                        {/* SENTIMENT */}
-                        {activeTab === 'sentiment' && (
-                          <SentimentAnalysisPanel />
-                        )}
+                      {/* SENTIMENT */}
+                      {activeTab === 'sentiment' && (
+                        <SentimentAnalysisPanel />
+                      )}
 
-                        {/* MONITORING */}
-                        {activeTab === 'monitoring' && (
-                          <ContinuousMonitoringPanel />
-                        )}
+                      {/* MONITORING */}
+                      {activeTab === 'monitoring' && (
+                        <ContinuousMonitoringPanel />
+                      )}
 
-                        {/* COMPLEXITY */}
-                        {activeTab === 'complexity' && (
-                          <ComplexityPredictionCard />
-                        )}
+                      {/* COMPLEXITY */}
+                      {activeTab === 'complexity' && (
+                        <ComplexityPredictionCard />
+                      )}
 
-                        {/* RESOURCES */}
-                        {activeTab === 'resources' && (
-                          <ResourceOptimizationPanel />
-                        )}
+                      {/* RESOURCES */}
+                      {activeTab === 'resources' && (
+                        <ResourceOptimizationPanel />
+                      )}
 
-                        {/* NLP */}
-                        {activeTab === 'nlp' && (
-                          <NLPCommandConsole />
-                        )}
+                      {/* NLP */}
+                      {activeTab === 'nlp' && (
+                        <NLPCommandConsole />
+                      )}
 
-                        {/* TRANSCRIPTION */}
-                        {activeTab === 'transcription' && (
-                          <TranscriptionPanel />
-                        )}
+                      {/* TRANSCRIPTION */}
+                      {activeTab === 'transcription' && (
+                        <TranscriptionPanel />
+                      )}
 
-                        {/* THINKING */}
-                        {activeTab === 'thinking' && (
-                          <ThinkingProcessDashboard />
-                        )}
+                      {/* THINKING */}
+                      {activeTab === 'thinking' && (
+                        <ThinkingProcessDashboard />
+                      )}
 
-                        {/* STATUS */}
-                        {activeTab === 'status' && (
-                          <div className="text-sm space-y-3">
-                            {dispatchDecision && (
-                              <div className="p-3 border rounded-lg bg-slate-50">
-                                <div className="font-semibold mb-2 text-slate-900">Decision Status</div>
-                                <div className="space-y-1 text-sm">
-                                  <div><strong>Route:</strong> {dispatchDecision.route}</div>
-                                  <div><strong>Confidence:</strong> {dispatchDecision.confidence}%</div>
-                                </div>
-                              </div>
-                            )}
+                      {/* STATUS */}
+                      {activeTab === 'status' && (
+                        <div className="text-sm space-y-3">
+                          {dispatchDecision && (
                             <div className="p-3 border rounded-lg bg-slate-50">
-                              <div className="font-semibold mb-2 text-slate-900">System Status</div>
+                              <div className="font-semibold mb-2 text-slate-900">Decision Status</div>
                               <div className="space-y-1 text-sm">
-                                <div>WebSocket: <span className="font-medium">{isConnected ? '🟢 Connected' : '🔴 Offline'}</span></div>
-                                <div>Analysis: <span className="font-medium">{isAnalyzing ? '⏳ Analyzing' : aiAnalysis ? '🟢 Ready' : '⚪ Waiting'}</span></div>
+                                <div><strong>Route:</strong> {dispatchDecision.route}</div>
+                                <div><strong>Confidence:</strong> {dispatchDecision.confidence}%</div>
                               </div>
                             </div>
+                          )}
+                          <div className="p-3 border rounded-lg bg-slate-50">
+                            <div className="font-semibold mb-2 text-slate-900">System Status</div>
+                            <div className="space-y-1 text-sm">
+                              <div>WebSocket: <span className="font-medium">{isConnected ? '🟢 Connected' : '🔴 Offline'}</span></div>
+                              <div>Analysis: <span className="font-medium">{isAnalyzing ? '⏳ Analyzing' : aiAnalysis ? '🟢 Ready' : '⚪ Waiting'}</span></div>
+                            </div>
                           </div>
-                        )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
