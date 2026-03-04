@@ -1,17 +1,37 @@
 "use client"
 
 import * as React from "react"
-import { useSidebar } from "@/components/ui/sidebar"
-import { 
-  ArchiveX, 
-  Inbox, 
-  File,
-  Send, 
-  Trash2, 
-  Command, 
-  AlertTriangle, 
+import {
+  ArchiveX,
+  Inbox,
+  Send,
+  Command,
+  AlertTriangle,
   AlertOctagon,
-  type LucideIcon
+  LayoutDashboard,
+  ClipboardList,
+  BookOpen,
+  Search,
+  Zap,
+  AlertCircle,
+  Activity,
+  FileSearch,
+  Locate,
+  MessageSquare,
+  Bot,
+  Brain,
+  Cpu,
+  Layers,
+  PieChart,
+  Terminal,
+  Type,
+  Lightbulb,
+  Settings,
+  ChevronRight,
+  BarChart,
+  type LucideIcon,
+  X,
+  Clock
 } from 'lucide-react'
 
 import { NavUser } from "@/components/nav-user"
@@ -22,87 +42,75 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarInput,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarRail,
+  SidebarSeparator,
 } from "@/components/ui/sidebar"
-import { Switch } from "@/components/ui/switch"
+import { Badge } from "@/components/ui/badge"
 import { EmergencyDetailCard } from "@/components/emergency-detail-card"
-import { WebSocketData } from "@/types/emergency"
+import { WebSocketData, EmergencyCall } from "@/types/emergency"
 import { useEmergencyStore } from '@/lib/store/emergency'
-import mapboxgl from 'mapbox-gl'
+import { cn } from "@/lib/utils"
 
-interface EmergencyCall {
-  id: string
-  location: string
-  nature: string
-  priority: "CRITICAL" | "MODERATE"
-  caller: string
-  time: string
-  details: string
-  coordinates: [number, number]
-  imageUrl: string | null
-  conversation: any[]
-  analysis: any
-}
+const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2hhcmlhbiIsImEiOiJjbDg0aGQxNG8wZnhnM25sa3VlYzk1NzVtIn0.BxFbcyCbxdoSXAmSgcS5og'
 
-// Updated sample data
-const data = {
+const navData = {
   user: {
     name: "Operator 42",
     email: "operator42@911.gov",
     avatar: "/avatars/operator.jpg",
   },
-  navMain: [
+  calls: [
+    { title: "Active Calls", icon: Inbox, id: "active" },
+    { title: "Dispatched", icon: Send, id: "dispatched" },
+    { title: "Archived", icon: ArchiveX, id: "archived" },
+  ],
+  operations: [
     {
-      title: "Active Calls",
-      url: "#",
-      icon: Inbox,
-      isActive: true,
+      title: "Core Operations",
+      items: [
+        { title: "Emergency Analysis", icon: Activity, id: "analysis" },
+        { title: "Intake Form", icon: ClipboardList, id: "intake" },
+        { title: "Protocol Reference", icon: BookOpen, id: "protocol" },
+        { title: "Hospital Search", icon: Search, id: "hospital" },
+      ]
     },
     {
-      title: "Pending",
-      url: "#",
-      icon: File,
-      isActive: false,
+      title: "Dispatch & Escalation",
+      items: [
+        { title: "Auto Dispatch", icon: Zap, id: "dispatch" },
+        { title: "Escalation Manager", icon: AlertCircle, id: "escalation" },
+      ]
     },
     {
-      title: "Dispatched",
-      url: "#",
-      icon: Send,
-      isActive: false,
+      title: "Operator Tools",
+      items: [
+        { title: "Live Analysis", icon: Activity, id: "live-analysis" },
+        { title: "Similar Cases", icon: FileSearch, id: "similar-cases" },
+        { title: "Location Verify", icon: Locate, id: "location-verify" },
+        { title: "Contextual Qs", icon: MessageSquare, id: "questions" },
+      ]
     },
     {
-      title: "Archived",
-      url: "#",
-      icon: ArchiveX,
-      isActive: false,
-    },
-    {
-      title: "Closed",
-      url: "#",
-      icon: Trash2,
-      isActive: false,
-    },
-  ] as const,
-  emergencyCalls: [] as EmergencyCall[], // Initialize with empty array
-} as const
-
-interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  wsData: WebSocketData | null
+      title: "AI & Autonomous",
+      items: [
+        { title: "Autonomous Control", icon: Bot, id: "autonomous-control" },
+        { title: "Sentiment Analysis", icon: Brain, id: "sentiment" },
+        { title: "Monitoring", icon: Activity, id: "monitoring" },
+        { title: "Complexity", icon: BarChart, id: "complexity" },
+        { title: "Resource Opt", icon: PieChart, id: "resources" },
+        { title: "NLP Console", icon: Terminal, id: "nlp" },
+        { title: "Transcription", icon: Type, id: "transcription" },
+        { title: "Thinking Process", icon: Lightbulb, id: "thinking" },
+      ]
+    }
+  ]
 }
-
-// Add type for navigation items
-interface NavItem {
-  title: string
-  url: string
-  icon: LucideIcon
-  isActive: boolean
-}
-
-const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2hhcmlhbiIsImEiOiJjbDg0aGQxNG8wZnhnM25sa3VlYzk1NzVtIn0.BxFbcyCbxdoSXAmSgcS5og'
 
 const getLocationDetails = async (location: string) => {
   try {
@@ -111,7 +119,6 @@ const getLocationDetails = async (location: string) => {
       `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${MAPBOX_TOKEN}&country=IN`
     )
     const data = await response.json()
-    
     if (data.features && data.features.length > 0) {
       const feature = data.features[0]
       const [lng, lat] = feature.center
@@ -124,7 +131,6 @@ const getLocationDetails = async (location: string) => {
     throw new Error('No location found')
   } catch (error) {
     console.error('Geocoding error:', error)
-    // Default to Mumbai coordinates
     return {
       coordinates: [72.8777, 19.0760],
       placeName: location,
@@ -133,209 +139,187 @@ const getLocationDetails = async (location: string) => {
   }
 }
 
-export function AppSidebar({ wsData, ...props }: AppSidebarProps) {
-  const [activeItem, setActiveItem] = React.useState<NavItem>(() => data.navMain[0])
-  const { setOpen } = useSidebar()
-  
-  const staticEmergencies = useEmergencyStore((state) => state.staticEmergencies)
-  const dynamicEmergency = useEmergencyStore((state) => state.dynamicEmergency)
-  const setDynamicEmergency = useEmergencyStore((state) => state.setDynamicEmergency)
-  const selectedEmergency = useEmergencyStore((state) => state.selectedEmergency)
-  const setSelectedEmergency = useEmergencyStore((state) => state.setSelectedEmergency)
-
-  // Set initial selected emergency only on mount
-  React.useEffect(() => {
-    if (!selectedEmergency && staticEmergencies.length > 0) {
-      const firstEmergency = staticEmergencies[0];
-      if (firstEmergency) {
-        setSelectedEmergency(firstEmergency);
-      }
-    }
-  }, []); // Only run once on mount, not when selectedEmergency changes
-
-  // Handle new emergency data
-  React.useEffect(() => {
-    const processEmergency = async () => {
-      if (!wsData?.data?.aiAnalysis) return;
-
-      try {
-        const locationDetails = await getLocationDetails(wsData.data.aiAnalysis.location);
-        
-        const coordinates: [number, number] = Array.isArray(locationDetails.coordinates) 
-          ? [locationDetails.coordinates[0], locationDetails.coordinates[1]]
-          : [72.8777, 19.0760];
-        
-        const emergencyData: EmergencyCall = {
-          id: 'LIVE-EMERGENCY',
-          location: locationDetails.placeName,
-          nature: wsData.data.aiAnalysis.title,
-          priority: wsData.data.aiAnalysis.type.toUpperCase() === "HIGH" ? "CRITICAL" : "MODERATE",
-          caller: wsData.data.aiAnalysis.name,
-          time: "Live",
-          details: wsData.data.aiAnalysis.summary,
-          coordinates,
-          imageUrl: locationDetails.imageUrl,
-          conversation: wsData.data.originalConversation || [],
-          analysis: wsData.data.aiAnalysis
-        };
-
-        setDynamicEmergency(emergencyData);
-      } catch (error) {
-        console.error('Error processing emergency:', error);
-      }
-    };
-
-    processEmergency();
-  }, [wsData, setDynamicEmergency]);
-
-  // Combine static and dynamic emergencies for display
-  const allEmergencies = React.useMemo(() => {
-    const emergencies = [...staticEmergencies];
-    if (dynamicEmergency) {
-      emergencies.unshift(dynamicEmergency);
-    }
-    return emergencies;
-  }, [dynamicEmergency, staticEmergencies]);
-
-  // Debug logs
-  React.useEffect(() => {
-    console.log('Static Emergencies:', staticEmergencies);
-    console.log('Dynamic Emergency:', dynamicEmergency);
-    console.log('All Emergencies:', allEmergencies);
-  }, [staticEmergencies, dynamicEmergency, allEmergencies]);
-
+// Sidebar 1: Core Features
+export function CoreFeaturesSidebar({
+  activeTab,
+  onTabChange,
+  open,
+  onOpenChange
+}: {
+  activeTab: string,
+  onTabChange: (tab: string) => void,
+  open: boolean,
+  onOpenChange: (open: boolean) => void
+}) {
   return (
     <Sidebar
-      collapsible="icon"
-      className="overflow-hidden [&>[data-sidebar=sidebar]]:flex-row"
-      {...props}
+      collapsible="none"
+      className={cn(
+        "z-20 border-r transition-all duration-300 ease-in-out bg-slate-900 text-slate-300",
+        open ? "w-[260px]" : "w-0 opacity-0 overflow-hidden"
+      )}
     >
-      <Sidebar
-        collapsible="none"
-        className="!w-[calc(var(--sidebar-width-icon)_+_1px)] border-r"
-      >
-        <SidebarHeader>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0">
-                <a href="#">
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <Command className="size-4" />
-                  </div>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">Acme Inc</span>
-                    <span className="truncate text-xs">Enterprise</span>
-                  </div>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupContent className="px-1.5 md:px-0">
+      <SidebarHeader className="border-b border-slate-800 p-4">
+        <div className="flex items-center gap-2">
+          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-blue-600 text-white">
+            <Command className="size-4" />
+          </div>
+          <span className="font-bold text-white tracking-tight">System Tools</span>
+        </div>
+      </SidebarHeader>
+      <SidebarContent className="p-2 gap-4">
+        {navData.operations.map((group) => (
+          <SidebarGroup key={group.title} className="px-0">
+            <SidebarGroupLabel className="text-[10px] text-slate-500 font-bold uppercase tracking-widest px-2 mb-2">
+              {group.title}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
               <SidebarMenu>
-                {data.navMain.map((item) => (
-                  <SidebarMenuItem key={item.title}>
+                {group.items.map((item) => (
+                  <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton
-                      tooltip={{
-                        children: item.title,
-                        hidden: false,
-                      }}
-                      onClick={() => {
-                        setActiveItem(item)
-                        setOpen(true)
-                      }}
-                      isActive={activeItem.title === item.title}
-                      className="px-2.5 md:px-2"
+                      onClick={() => onTabChange(item.id)}
+                      isActive={activeTab === item.id}
+                      className={cn(
+                        "transition-all duration-200 hover:bg-slate-800 hover:text-white px-2",
+                        activeTab === item.id ? "bg-blue-600 text-white" : ""
+                      )}
                     >
-                      <item.icon />
-                      <span>{item.title}</span>
+                      <item.icon className="size-4 mr-2" />
+                      <span className="text-sm">{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter>
-          <NavUser user={data.user} />
-        </SidebarFooter>
-      </Sidebar>
+        ))}
+      </SidebarContent>
+      <SidebarFooter className="border-t border-slate-800 p-2">
+        <NavUser user={navData.user} />
+      </SidebarFooter>
+    </Sidebar>
+  )
+}
 
-      {/* This is the second sidebar */}
-      {/* We disable collapsible and let it fill remaining space */}
-      <Sidebar collapsible="none" className="hidden flex-1 md:flex">
-        <SidebarHeader className="gap-3.5 border-b p-4">
-          <div className="flex w-full items-center justify-between">
-            <div className="text-base font-medium text-foreground">
-              {activeItem.title}
-            </div>
+// Sidebar 2: Emergency List
+export function EmergencyListSidebar({
+  wsData,
+  open,
+  onOpenChange
+}: {
+  wsData: WebSocketData | null,
+  open: boolean,
+  onOpenChange: (open: boolean) => void
+}) {
+  const [activeCategory, setActiveCategory] = React.useState("active")
+
+  const staticEmergencies = useEmergencyStore((state) => state.staticEmergencies)
+  const dynamicEmergency = useEmergencyStore((state) => state.dynamicEmergency)
+  const setDynamicEmergency = useEmergencyStore((state) => state.setDynamicEmergency)
+  const selectedEmergency = useEmergencyStore((state) => state.selectedEmergency)
+  const setSelectedEmergency = useEmergencyStore((state) => state.setSelectedEmergency)
+
+  React.useEffect(() => {
+    if (!selectedEmergency && staticEmergencies.length > 0) {
+      const first = staticEmergencies[0];
+      if (first) setSelectedEmergency(first);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    const processEmergency = async () => {
+      if (!wsData?.data?.aiAnalysis) return;
+      const locationDetails = await getLocationDetails(wsData.data.aiAnalysis.location);
+      const emergencyData: EmergencyCall = {
+        id: 'LIVE-EMERGENCY',
+        location: locationDetails.placeName,
+        nature: wsData.data.aiAnalysis.title,
+        priority: wsData.data.aiAnalysis.type.toUpperCase() === "HIGH" ? "CRITICAL" : "MODERATE",
+        caller: wsData.data.aiAnalysis.name,
+        time: "Live",
+        details: wsData.data.aiAnalysis.summary,
+        coordinates: (locationDetails.coordinates as [number, number]) || [72.8777, 19.0760],
+        imageUrl: locationDetails.imageUrl,
+        conversation: wsData.data.originalConversation || [],
+        analysis: wsData.data.aiAnalysis
+      };
+      setDynamicEmergency(emergencyData);
+    };
+    processEmergency();
+  }, [wsData]);
+
+  const allEmergencies = React.useMemo(() => {
+    const emergencies = [...staticEmergencies];
+    if (dynamicEmergency) emergencies.unshift(dynamicEmergency);
+    return emergencies;
+  }, [dynamicEmergency, staticEmergencies]);
+
+  return (
+    <Sidebar
+      collapsible="none"
+      className={cn(
+        "z-10 border-r transition-all duration-300 ease-in-out bg-white",
+        open ? "w-[300px]" : "w-0 opacity-0 overflow-hidden"
+      )}
+    >
+      <SidebarHeader className="p-4 border-b bg-slate-50/50 gap-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Clock className="size-4 text-blue-600" />
+            <span className="font-bold text-slate-900 tracking-tight">Emergency Queue</span>
           </div>
-          <SidebarInput placeholder="Type to search..." />
-          <div className="grid grid-cols-3 gap-2 px-4 py-3 border-t">
-            <div className="flex flex-col items-center">
-              <span className="text-xs text-muted-foreground">Total</span>
-              <span className="text-xl font-bold">{allEmergencies.length}</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="text-xs text-red-600">Critical</span>
-              <span className="text-xl font-bold text-red-600">
-                {allEmergencies.filter(e => e.priority === "CRITICAL").length}
-              </span>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="text-xs text-yellow-600">Moderate</span>
-              <span className="text-xl font-bold text-yellow-600">
-                {allEmergencies.filter(e => e.priority === "MODERATE").length}
-              </span>
-            </div>
+          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">LIVE</Badge>
+        </div>
+        <SidebarInput placeholder="Search records..." className="bg-white h-9 text-xs" />
+        <div className="grid grid-cols-2 gap-2">
+          <div className="p-2 bg-red-50 border border-red-100 rounded-lg flex flex-col items-center">
+            <span className="text-[10px] font-bold text-red-600 uppercase">Critical</span>
+            <span className="text-lg font-black text-red-700">{allEmergencies.filter(e => e.priority === "CRITICAL").length}</span>
           </div>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup className="px-0">
-            <SidebarGroupContent className="gap-2 p-2 flex flex-col">
-              {allEmergencies.map((call) => (
-                <a
-                  href="#"
-                  key={call.id}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    setSelectedEmergency(call)
-                  }}
-                  className={`flex items-center justify-between border-l-4 ${
-                    call.id === 'LIVE-EMERGENCY' ? 'animate-pulse' : ''
-                  } ${
-                    call.priority === 'CRITICAL' 
-                      ? 'border-l-red-500 border-red-500 border bg-red-50/50' 
-                      : 'border-l-yellow-500 border-yellow-500 border bg-yellow-50/50'
-                  } p-4 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground`}
-                >
-                  <div className="flex items-center gap-2">
-                    {call.priority === 'CRITICAL' ? (
-                      <AlertOctagon className="h-5 w-5 text-red-500" />
-                    ) : (
-                      <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                    )}
-                    <div className="flex flex-col">
-                      <span className="font-medium">{call.nature}</span>
-                      <span className={`text-xs font-bold ${
-                        call.priority === 'CRITICAL' ? 'text-red-500' : 'text-yellow-500'
-                      }`}>
-                        {call.priority}
-                      </span>
-                    </div>
+          <div className="p-2 bg-blue-50 border border-blue-100 rounded-lg flex flex-col items-center">
+            <span className="text-[10px] font-bold text-blue-600 uppercase">Active</span>
+            <span className="text-lg font-black text-blue-700">{allEmergencies.length}</span>
+          </div>
+        </div>
+      </SidebarHeader>
+      <SidebarContent className="p-2 scrollbar-thin overflow-y-auto">
+        <div className="flex flex-col gap-2">
+          {allEmergencies.map((call) => (
+            <button
+              key={call.id}
+              onClick={() => setSelectedEmergency(call)}
+              className={cn(
+                "group relative flex flex-col gap-2 p-3 rounded-xl border transition-all duration-200 text-left",
+                call.id === 'LIVE-EMERGENCY' ? "border-blue-400 bg-blue-50/30" : "border-slate-100 bg-white hover:border-slate-300",
+                selectedEmergency?.id === call.id ? "ring-2 ring-blue-500 border-blue-200 bg-blue-50/10" : ""
+              )}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex gap-2">
+                  <div className={cn(
+                    "size-8 rounded-lg flex items-center justify-center",
+                    call.priority === 'CRITICAL' ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"
+                  )}>
+                    {call.priority === 'CRITICAL' ? <AlertOctagon className="size-4" /> : <Activity className="size-4" />}
                   </div>
-                  <span className="text-xs font-semibold">{call.time}</span>
-                </a>
-              ))}
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-      </Sidebar>
-
+                  <div className="flex flex-col overflow-hidden">
+                    <span className="text-xs font-black text-slate-900 uppercase truncate max-w-[140px]">{call.nature}</span>
+                    <span className="text-[10px] font-bold text-slate-500">{call.time}</span>
+                  </div>
+                </div>
+                <Badge className={call.priority === 'CRITICAL' ? "bg-red-600" : "bg-blue-600"}>{call.priority}</Badge>
+              </div>
+              <div className="flex items-center gap-1.5 text-[10px] text-slate-600 font-medium truncate">
+                <Locate className="size-3 text-slate-400" />
+                {call.location}
+              </div>
+            </button>
+          ))}
+        </div>
+      </SidebarContent>
       {selectedEmergency && (
-        <EmergencyDetailCard 
+        <EmergencyDetailCard
           emergency={selectedEmergency}
           onClose={() => setSelectedEmergency(null)}
         />
