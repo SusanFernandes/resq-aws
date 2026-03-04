@@ -170,8 +170,9 @@ export function CoreFeaturesSidebar({
       <SidebarContent className="p-2 gap-4">
         {navData.operations.map((group) => (
           <SidebarGroup key={group.title} className="px-0">
-            <SidebarGroupLabel className="text-[10px] text-slate-500 font-bold uppercase tracking-widest px-2 mb-2">
+            <SidebarGroupLabel className="text-[10px] text-slate-500 font-bold uppercase tracking-widest px-2 mb-2 flex items-center justify-between">
               {group.title}
+              <Badge variant="outline" className="text-[8px] h-3 px-1 border-slate-800 text-slate-500">{group.items.length}</Badge>
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -196,6 +197,12 @@ export function CoreFeaturesSidebar({
         ))}
       </SidebarContent>
       <SidebarFooter className="border-t border-slate-800 p-2">
+        <div className="px-2 py-2 mb-2 bg-slate-800/50 rounded-lg border border-slate-700/50">
+          <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 uppercase">
+            <span>System Status</span>
+            <span className="text-green-500">Online</span>
+          </div>
+        </div>
         <NavUser user={navData.user} />
       </SidebarFooter>
     </Sidebar>
@@ -304,15 +311,15 @@ export function EmergencyListSidebar({
                     {call.priority === 'CRITICAL' ? <AlertOctagon className="size-4" /> : <Activity className="size-4" />}
                   </div>
                   <div className="flex flex-col overflow-hidden">
-                    <span className="text-xs font-black text-slate-900 uppercase truncate max-w-[140px]">{call.nature}</span>
-                    <span className="text-[10px] font-bold text-slate-500">{call.time}</span>
+                    <span className="text-xs font-black text-slate-900 uppercase truncate max-w-[140px]">{call.nature || "Emergency Event"}</span>
+                    <span className="text-[10px] font-bold text-slate-500">{call.time || "Recent"}</span>
                   </div>
                 </div>
-                <Badge className={call.priority === 'CRITICAL' ? "bg-red-600" : "bg-blue-600"}>{call.priority}</Badge>
+                <Badge className={call.priority === 'CRITICAL' ? "bg-red-600" : "bg-blue-600"}>{call.priority || "MODERATE"}</Badge>
               </div>
               <div className="flex items-center gap-1.5 text-[10px] text-slate-600 font-medium truncate">
                 <Locate className="size-3 text-slate-400" />
-                {call.location}
+                {call.location || "Location pending..."}
               </div>
             </button>
           ))}

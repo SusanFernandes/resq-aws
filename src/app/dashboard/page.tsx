@@ -311,8 +311,8 @@ export default function Page() {
                     {activeTab === 'analysis' && (
                       <div className="space-y-4">
                         <div className="bg-slate-50 p-3 rounded-lg border text-sm space-y-1">
-                          <div><strong>ID:</strong> {wsData?.data?.id || "N/A"}</div>
-                          <div><strong>Time:</strong> {wsData?.data?.timestamp ? new Date(wsData.data.timestamp).toLocaleTimeString() : "N/A"}</div>
+                          <div><strong>ID:</strong> {wsData?.data?.id || "E-QUEUED"}</div>
+                          <div><strong>Time:</strong> {wsData?.data?.timestamp ? new Date(wsData.data.timestamp).toLocaleTimeString() : "READY"}</div>
                         </div>
                         <AIAnalysisCard analysis={aiAnalysis} isLoading={isAnalyzing} />
                       </div>
