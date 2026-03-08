@@ -352,12 +352,13 @@ def send_to_dashboard(session):
             "id": session.get("call_sid", f"call-{int(time.time())}"),
             "convo": {
                 "data": conversation_data
-            }
+            },
+            "emergency_info": emergency_info   # Include extracted emergency information
         }
             
         # Send POST request to the websocket server
         response = requests.post(
-            "http://localhost:8080/twilio-webhook",  # Update this URL to your websocket server
+            "http://localhost:8080/twilio-webhook",
             json=payload,
             headers={"Content-Type": "application/json"}
         )

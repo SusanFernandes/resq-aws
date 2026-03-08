@@ -9,9 +9,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   webpack: (config) => {
     config.externals.push({
       'utf-8-validate': 'commonjs utf-8-validate',
@@ -19,6 +16,7 @@ const nextConfig = {
     });
     return config;
   },
+  turbopack: {},
 }
 
 export default nextConfig;

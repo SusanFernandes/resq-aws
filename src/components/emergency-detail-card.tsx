@@ -35,7 +35,7 @@ export function EmergencyDetailCard({ emergency, onClose }: EmergencyDetailCardP
       }
 
       // Connect to WebSocket
-      const socket = new WebSocket('ws://localhost:8080?type=dashboard')
+      const socket = new WebSocket('ws://localhost:8080/?type=dashboard')
       
       socket.onopen = () => {
         // Send dispatch report
@@ -57,7 +57,13 @@ export function EmergencyDetailCard({ emergency, onClose }: EmergencyDetailCardP
 
       socket.onerror = (error) => {
         console.error('WebSocket error:', error)
-        throw new Error('Failed to dispatch service')
+        toast({
+          title: 'Dispatch Failed',
+          description: 'Failed to dispatch service due to a connection error.',
+          variant: 'destructive',
+        })
+        setIsDispatching(false)
+        try { socket.close() } catch (e) {}
       }
 
     } catch (error) {
@@ -74,31 +80,45 @@ export function EmergencyDetailCard({ emergency, onClose }: EmergencyDetailCardP
 
   if (!mounted) return null
 
+  const handleClose = () => {
+    onClose()
+  }
+
   return createPortal(
     <div 
       className="fixed inset-0 flex items-start justify-end pointer-events-none"
-      style={{ marginLeft: 'var(--sidebar-width)' }}
+      style={{ marginLeft: 'var(--sidebar-width)', zIndex: 2147483647 }}
     >
       <div className="flex items-end gap-4 p-6 h-full pointer-events-auto">
         {/* Emergency Details Card */}
         <div className="bg-white rounded-lg shadow-2xl border animate-in fade-in zoom-in-95 duration-200 w-[350px]">
-          <div className="flex items-start justify-between p-4">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2 p-4 border-b">
+            <div className="flex items-center gap-3 flex-1">
               {emergency.priority === 'CRITICAL' ? (
-                <AlertOctagon className="h-5 w-5 text-red-500" />
+                <AlertOctagon className="h-5 w-5 text-red-500 flex-shrink-0" />
               ) : (
-                <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
               )}
-              <div>
-                <h3 className="font-semibold">{emergency.nature}</h3>
-                <p className="text-sm text-muted-foreground">{emergency.location}</p>
+              <div className="min-w-0">
+                <h3 className="font-semibold text-base truncate">{emergency.nature}</h3>
+                <p className="text-sm text-muted-foreground truncate">{emergency.location}</p>
               </div>
             </div>
             <button 
-              onClick={onClose} 
-              className="text-muted-foreground hover:text-foreground"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                handleClose()
+              }}
+              onMouseDown={(e) => {
+                e.preventDefault()
+              }}
+              className="flex-shrink-0 inline-flex items-center justify-center w-10 h-10 -m-1 text-slate-700 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 transition-all rounded-md cursor-pointer"
+              type="button"
+              aria-label="Close emergency detail"
+              title="Close (ESC)"
             >
-              <X className="h-4 w-4" />
+              <X className="h-6 w-6" />
             </button>
           </div>
           

@@ -1,0 +1,200 @@
+{
+  "emergencyCallExamples": [
+    {
+      "id": "call_001",
+      "timestamp": "2024-01-15T14:23:00Z",
+      "callerName": "Rajesh Kumar",
+      "callerPhone": "+91 98765 43210",
+      "callerAge": 35,
+      "location": "Marine Drive, Mumbai",
+      "latitude": 19.076,
+      "longitude": 72.8777,
+      "emergencyType": "MEDICAL",
+      "initialDescription": "My father has severe chest pain, having difficulty breathing, he is 65 years old. Please send an ambulance immediately!",
+      "severity": "critical",
+      "transcript": [
+        { "role": "caller", "content": "Help! My father is having chest pain and can't breathe properly" },
+        { "role": "operator", "content": "Okay, stay calm. What is his age?" },
+        { "role": "caller", "content": "He is 65 years old. Please send ambulance fast!" },
+        { "role": "operator", "content": "We are sending an ambulance. Has he taken any medication?" },
+        { "role": "caller", "content": "Yes, he takes heart medicine but I think it's not working" }
+      ],
+      "extractedInfo": {
+        "callerName": "Rajesh Kumar",
+        "victimAge": 65,
+        "victimCondition": "Chest pain, difficulty breathing",
+        "medicationHistory": "Heart medication (ongoing)",
+        "consciousness": "Conscious"
+      },
+      "intent": "MEDICAL",
+      "confidence": 98,
+      "dispatch_status": "completed"
+    },
+    {
+      "id": "call_002",
+      "timestamp": "2024-01-15T15:45:00Z",
+      "callerName": "Priya Singh",
+      "callerPhone": "+91 98765 43211",
+      "callerAge": 28,
+      "location": "Bandra Kurla Complex, Mumbai",
+      "latitude": 19.0543,
+      "longitude": 72.8298,
+      "emergencyType": "ACCIDENT",
+      "initialDescription": "There has been a car collision near Bandra Kurla Complex. Two vehicles involved, multiple people injured. One person unconscious.",
+      "severity": "critical",
+      "transcript": [
+        { "role": "caller", "content": "There is an accident! Car collision near BKC, people are hurt!" },
+        { "role": "operator", "content": "How many people are injured?" },
+        { "role": "caller", "content": "I see... three or four people, one is unconscious!" },
+        { "role": "operator", "content": "Is anyone bleeding?" },
+        { "role": "caller", "content": "Yes, one person has heavy bleeding from the head" },
+        { "role": "operator", "content": "Stay back from traffic. Ambulance and police are coming" }
+      ],
+      "extractedInfo": {
+        "callerName": "Priya Singh",
+        "injuryCount": 4,
+        "injuryTypes": ["Head trauma", "Heavy bleeding", "Loss of consciousness"],
+        "vehicleCount": 2,
+        "location": "Bandra Kurla Complex"
+      },
+      "intent": "ACCIDENT",
+      "confidence": 95,
+      "dispatch_status": "in_progress"
+    },
+    {
+      "id": "call_003",
+      "timestamp": "2024-01-15T16:12:00Z",
+      "callerName": "Amit Patel",
+      "callerPhone": "+91 99876 54321",
+      "callerAge": 45,
+      "location": "Dadar Railway Station, Mumbai",
+      "latitude": 19.0176,
+      "longitude": 72.8327,
+      "emergencyType": "FIRE",
+      "initialDescription": "Fire outbreak in residential building at Dadar. Smoke visible, people need to evacuate. Some people are trapped on upper floors.",
+      "severity": "critical",
+      "transcript": [
+        { "role": "caller", "content": "There is fire in the building! Smoke everywhere!" },
+        { "role": "operator", "content": "Are you safe? Where are you calling from?" },
+        { "role": "caller", "content": "I am outside. People are still on the 4th and 5th floors. Can't evacuate!" },
+        { "role": "operator", "content": "Fire brigade is on the way. Tell people to go to balcony or window" }
+      ],
+      "extractedInfo": {
+        "callerName": "Amit Patel",
+        "buildingFloors": 5,
+        "smokeDensity": "High",
+        "peopleTrapped": "4-5 people on upper floors",
+        "evacuationStatus": "Partial"
+      },
+      "intent": "FIRE",
+      "confidence": 97,
+      "dispatch_status": "en_route"
+    },
+    {
+      "id": "call_004",
+      "timestamp": "2024-01-15T17:30:00Z",
+      "callerName": "Ananya Verma",
+      "callerPhone": "+91 98765 43212",
+      "callerAge": 32,
+      "location": "Fort, Mumbai",
+      "latitude": 18.9676,
+      "longitude": 72.8326,
+      "emergencyType": "POLICE",
+      "initialDescription": "Witnessing suspicious activity - looks like a robbery in progress at the jewelry store. Suspect is armed. Please send police immediately.",
+      "severity": "high",
+      "transcript": [
+        { "role": "caller", "content": "There is a robbery happening! In the jewelry store near CST!" },
+        { "role": "operator", "content": "Are you in a safe location?" },
+        { "role": "caller", "content": "Yes, I am across the street. There is a man with a gun threatening the shopkeeper" },
+        { "role": "operator", "content": "Stay where you are. Police are coming. Can you describe the suspect?" },
+        { "role": "caller", "content": "Male, around 30, wearing black shirt, has a gun" }
+      ],
+      "extractedInfo": {
+        "callerName": "Ananya Verma",
+        "incidentType": "Armed Robbery",
+        "threatLevel": "High",
+        "suspectDescription": "Male, ~30 years old, black shirt, armed with gun",
+        "victimCount": 1
+      },
+      "intent": "POLICE",
+      "confidence": 92,
+      "dispatch_status": "dispatched"
+    },
+    {
+      "id": "call_005",
+      "timestamp": "2024-01-15T18:15:00Z",
+      "callerName": "Vikram Singh",
+      "callerPhone": "+91 98765 43213",
+      "callerAge": 40,
+      "location": "Powai, Mumbai",
+      "latitude": 19.1136,
+      "longitude": 72.9076,
+      "emergencyType": "MEDICAL",
+      "initialDescription": "Severe allergic reaction - person is having trouble breathing and severe swelling on face. Medical condition is deteriorating.",
+      "severity": "high",
+      "transcript": [
+        { "role": "caller", "content": "My wife is having an allergic reaction! Her face is swelling, she can't breathe!" },
+        { "role": "operator", "content": "What caused the allergy?" },
+        { "role": "caller", "content": "We are not sure, maybe something she ate. She has history of allergies" },
+        { "role": "operator", "content": "Is she conscious?" },
+        { "role": "caller", "content": "Yes but panicking. Please send ambulance fast!" }
+      ],
+      "extractedInfo": {
+        "callerName": "Vikram Singh",
+        "victimAge": 38,
+        "condition": "Anaphylaxis symptoms - facial swelling, difficulty breathing",
+        "allergyHistory": "Yes",
+        "conscious": true,
+        "responseTime_acceptable": "Immediate"
+      },
+      "intent": "MEDICAL",
+      "confidence": 94,
+      "dispatch_status": "completed"
+    },
+    {
+      "id": "call_006",
+      "timestamp": "2024-01-15T19:00:00Z",
+      "callerName": "Suresh Gupta",
+      "callerPhone": "+91 99876 54322",
+      "callerAge": 55,
+      "location": "Kurla, Mumbai",
+      "latitude": 19.1026,
+      "longitude": 72.8877,
+      "emergencyType": "TOXIC",
+      "initialDescription": "Gas leak detected in residential building. Strange smell, residents feeling dizzy. Possible chemical hazard.",
+      "severity": "high",
+      "transcript": [
+        { "role": "caller", "content": "There is gas leak in our building! Strange smell, people feeling dizzy!" },
+        { "role": "operator", "content": "How many people are affected?" },
+        { "role": "caller", "content": "About 20-30 people in the building. Some have headaches" },
+        { "role": "operator", "content": "Evacuate immediately. Go outside. HAZMAT team is coming" }
+      ],
+      "extractedInfo": {
+        "callerName": "Suresh Gupta",
+        "hazardType": "Gas Leak",
+        "affectedPeople": "20-30",
+        "symptoms": "Dizziness, headache",
+        "buildingOccupancy": "Residential"
+      },
+      "intent": "TOXIC",
+      "confidence": 89,
+      "dispatch_status": "en_route"
+    }
+  ],
+  "callTranscriptExample": {
+    "callId": "call_exp_001",
+    "duration": 245,
+    "fullTranscript": "User: Help! My father is having chest pain and can't breathe properly!\nOperator: Okay, stay calm. I'm connecting you to emergency services. What is his age?\nUser: He is 65 years old. Please send ambulance fast!\nOperator: We are sending an ambulance right away. Has he taken any medication recently?\nUser: Yes, he takes heart medicine but I think it's not working.\nOperator: That's helpful information. The ambulance will arrive in about 8 minutes. Keep him sitting and try to keep him calm.\nUser: Okay, we will do that. Please hurry!\nOperator: Help is on the way. Stay with your father and keep the line open.",
+    "extractedLocations": ["Marine Drive, Mumbai", "19.076°N, 72.8777°E"],
+    "extractedPeople": [
+      { "role": "patient", "age": 65, "gender": "Male", "name": "Unknown" },
+      { "role": "caller", "age": 35, "gender": "Male", "name": "Rajesh Kumar" }
+    ],
+    "extractedSituation": {
+      "type": "Cardiac Emergency",
+      "symptoms": ["Chest pain", "Difficulty breathing"],
+      "medications": ["Heart medication"],
+      "severity": "Critical"
+    }
+  }
+}
