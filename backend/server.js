@@ -63,6 +63,24 @@ if (!process.env.GEMINI_API_KEY) {
 }
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+// Map emergency types from app.py to severity levels for frontend
+function mapEmergencyTypeToSeverity(emergencyType) {
+  const severityMap = {
+    fire: "critical",
+    medical: "critical",
+    police: "moderate",
+    accident: "moderate",
+    crime: "moderate",
+    assault: "moderate",
+    theft: "low",
+    // Add more mappings as needed
+  };
+  
+  if (!emergencyType) return "moderate";
+  const normalizedType = emergencyType.toLowerCase();
+  return severityMap[normalizedType] || "moderate";
+}
+
 async function analyzeEmergencyCall(conversationHistory) {
   try {
     const model = genAI.getGenerativeModel({
@@ -130,12 +148,39 @@ app.post("/twilio-webhook", async (req, res) => {
     const twilioData = req.body;
     console.log(twilioData);
     const conversationHistory = twilioData.convo?.data || [];
-    const aiAnalysis = await analyzeEmergencyCall(conversationHistory);
+    const emergencyInfo = twilioData.emergency_info || {};
+    
+    // Get analysis from Gemini
+    const geminiAnalysis = await analyzeEmergencyCall(conversationHistory);
+    
+    // Merge Gemini's analysis with emergency_info from app.py
+    // Prioritize Gemini's results but fall back to emergency_info when needed
+    const mergedAnalysis = {
+      ...geminiAnalysis,
+      location: geminiAnalysis.location && geminiAnalysis.location !== "Unknown"
+        ? geminiAnalysis.location
+        : emergencyInfo.location || "Unknown",
+      name: geminiAnalysis.name && geminiAnalysis.name !== "Unknown"
+        ? geminiAnalysis.name
+        : emergencyInfo.caller_contact || geminiAnalysis.name || "Unknown",
+      summary: geminiAnalysis.summary && geminiAnalysis.summary !== "Failed to process emergency details"
+        ? geminiAnalysis.summary
+        : emergencyInfo.situation || geminiAnalysis.summary || "Failed to process emergency details",
+      // Use Gemini's type if available, otherwise map from emergency_info
+      type: geminiAnalysis.type && geminiAnalysis.type !== "low"
+        ? geminiAnalysis.type
+        : mapEmergencyTypeToSeverity(emergencyInfo.emergency_type) || geminiAnalysis.type || "moderate",
+      title: geminiAnalysis.title && geminiAnalysis.title !== "Analysis Error"
+        ? geminiAnalysis.title
+        : emergencyInfo.emergency_type
+          ? `${emergencyInfo.emergency_type} emergency`
+          : geminiAnalysis.title || "Emergency Analysis",
+    };
 
     const enrichedData = {
       id: twilioData.id || "unknown-id",
       originalConversation: conversationHistory,
-      aiAnalysis: aiAnalysis,
+      aiAnalysis: mergedAnalysis,
     };
 
     broadcastToDashboard({
@@ -147,26 +192,28 @@ app.post("/twilio-webhook", async (req, res) => {
   } catch (error) {
     console.error("Webhook processing error:", error);
 
+    // Try to use the emergency_info from app.py if available
+    const emergencyInfo = req.body.emergency_info || {};
+    const conversationHistory = req.body.convo?.data || [];
+
+    const aiAnalysis = {
+      location: emergencyInfo.location || "Unknown",
+      name: emergencyInfo.caller_contact || "Unknown",
+      age: "Unknown", // app.py may not have age
+      summary: emergencyInfo.situation || "Failed to process emergency details",
+      type: mapEmergencyTypeToSeverity(emergencyInfo.emergency_type),
+      title: emergencyInfo.emergency_type
+        ? `${emergencyInfo.emergency_type} emergency`
+        : "Emergency Analysis Error",
+    };
+
     broadcastToDashboard({
       type: "twilio-update",
       data: {
-        id: 80321949,
+        id: req.body.id || `error-${Date.now()}`,
         timestamp: new Date().toISOString(),
-        originalConversation: [
-          {
-            role: "assistant",
-            content: "1-1-2 what's you emergency?",
-          },
-        ],
-        aiAnalysis: {
-          location: "Unknown",
-          name: "Unknown",
-          age: "Unknown",
-          summary: "Failed to process emergency details",
-          type: "low",
-          title: "Emergency Analysis Error",
-          emergencyId: 123124412,
-        },
+        originalConversation: conversationHistory,
+        aiAnalysis: aiAnalysis,
       },
     });
 
