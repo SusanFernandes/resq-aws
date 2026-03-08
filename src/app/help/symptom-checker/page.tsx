@@ -3,15 +3,12 @@
  * Hosts the interactive SymptomCheckerFlow component
  */
 
+'use client'
+
 import React from 'react'
 import { SymptomCheckerFlow } from '@/features/user/symptom-checker/symptom-checker-flow'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertTriangle } from 'lucide-react'
-
-export const metadata = {
-  title: 'Symptom Checker - ResQ Emergency Help',
-  description: 'Fast and accurate symptom assessment to determine your level of medical urgency',
-}
 
 export default function SymptomCheckerPage() {
   return (
