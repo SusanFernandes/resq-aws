@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/tabs'
 import { AlertTriangle, CheckCircle, Info, ChevronRight, RotateCcw } from 'lucide-react'
 
-type DecisionType = 'CALL_112' | 'SEE_DOCTOR' | 'SELF_CARE' | null'
+type DecisionType = 'CALL_112' | 'SEE_DOCTOR' | 'SELF_CARE' | null
 
 interface DecisionReason {
   decision: DecisionType
