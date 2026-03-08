@@ -7,7 +7,9 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
-    DATABASE_URL: z.string().url(),
+    // DATABASE_URL is optional during build but should be set at runtime
+    // Set SKIP_ENV_VALIDATION=true in Vercel if you need to skip validation
+    DATABASE_URL: z.string().url().optional(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
