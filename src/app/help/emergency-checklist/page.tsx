@@ -24,7 +24,7 @@ interface ChecklistSection {
   items: ChecklistItem[]
 }
 
-export function EmergencyChecklistPage() {
+export default function EmergencyChecklistPage() {
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set())
 
   const toggleItem = (itemId: string) => {
